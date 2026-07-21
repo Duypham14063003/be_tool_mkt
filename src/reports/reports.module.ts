@@ -1,0 +1,2 @@
+import { BullModule } from '@nestjs/bullmq'; import { Module } from '@nestjs/common'; import { ReportProcessor } from './report.processor'; import { ReportExportService } from './report-export.service'; import { ReportsController } from './reports.controller'; import { ReportsService } from './reports.service';
+@Module({imports:[BullModule.registerQueue({name:'report-generation'})],controllers:[ReportsController],providers:[ReportsService,ReportProcessor,ReportExportService]})export class ReportsModule{}
