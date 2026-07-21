@@ -1,3 +1,42 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common'; import { AuthGuard } from '@nestjs/passport'; import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'; import { AuthUser } from '../common/auth.types'; import { CurrentUser } from '../common/current-user.decorator'; import { CreatePlatformAccountDto, UpdatePlatformAccountDto } from './dto'; import { PlatformAccountsService } from './platform-accounts.service';
-@ApiTags('platform-accounts') @ApiBearerAuth() @UseGuards(AuthGuard('jwt')) @Controller('platform-accounts')
-export class PlatformAccountsController { constructor(private service: PlatformAccountsService) {} @Get() list(@CurrentUser() u: AuthUser){return this.service.list(u)} @Get(':id') get(@Param('id') id:string,@CurrentUser()u:AuthUser){return this.service.get(id,u)} @Post() create(@Body()d:CreatePlatformAccountDto,@CurrentUser()u:AuthUser){return this.service.create(d,u)} @Patch(':id') update(@Param('id')id:string,@Body()d:UpdatePlatformAccountDto,@CurrentUser()u:AuthUser){return this.service.update(id,d,u)} @Delete(':id') remove(@Param('id')id:string,@CurrentUser()u:AuthUser){return this.service.remove(id,u)} @Post(':id/test-connection') test(@Param('id')id:string,@CurrentUser()u:AuthUser){return this.service.test(id,u)} @Post(':id/reconnect') reconnect(@Param('id')id:string,@CurrentUser()u:AuthUser){return this.service.update(id,{connectionStatus:'CONNECTED'},u)} @Get(':id/session-status') session(@Param('id')id:string,@CurrentUser()u:AuthUser){return this.service.session(id,u)} }
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AuthUser } from '../common/auth.types';
+import { CurrentUser } from '../common/current-user.decorator';
+import { CreatePlatformAccountDto, UpdatePlatformAccountDto } from './dto';
+import { PlatformAccountsService } from './platform-accounts.service';
+@ApiTags('platform-accounts')
+@ApiBearerAuth()
+@UseGuards(AuthGuard('jwt'))
+@Controller('platform-accounts')
+export class PlatformAccountsController {
+  constructor(private service: PlatformAccountsService) {}
+  @Get() list(@CurrentUser() u: AuthUser) {
+    return this.service.list(u);
+  }
+  @Get(':id') get(@Param('id') id: string, @CurrentUser() u: AuthUser) {
+    return this.service.get(id, u);
+  }
+  @Post() create(@Body() d: CreatePlatformAccountDto, @CurrentUser() u: AuthUser) {
+    return this.service.create(d, u);
+  }
+  @Patch(':id') update(
+    @Param('id') id: string,
+    @Body() d: UpdatePlatformAccountDto,
+    @CurrentUser() u: AuthUser,
+  ) {
+    return this.service.update(id, d, u);
+  }
+  @Delete(':id') remove(@Param('id') id: string, @CurrentUser() u: AuthUser) {
+    return this.service.remove(id, u);
+  }
+  @Post(':id/test-connection') test(@Param('id') id: string, @CurrentUser() u: AuthUser) {
+    return this.service.test(id, u);
+  }
+  @Post(':id/reconnect') reconnect(@Param('id') id: string, @CurrentUser() u: AuthUser) {
+    return this.service.update(id, { connectionStatus: 'CONNECTED' }, u);
+  }
+  @Get(':id/session-status') session(@Param('id') id: string, @CurrentUser() u: AuthUser) {
+    return this.service.session(id, u);
+  }
+}
