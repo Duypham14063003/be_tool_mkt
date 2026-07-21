@@ -1,0 +1,1 @@
+import{Global,Module}from'@nestjs/common';import{KpiCalculatorService}from'./kpi-calculator.service';@Global()@Module({providers:[KpiCalculatorService],exports:[KpiCalculatorService]})export class KpisModule{}

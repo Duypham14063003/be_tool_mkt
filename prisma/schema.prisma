@@ -1,0 +1,258 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MARKETING
+  VIEWER
+}
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+enum Platform {
+  FACEBOOK
+  TIKTOK
+}
+enum ConnectionStatus {
+  CONNECTED
+  EXPIRED
+  DISCONNECTED
+  ERROR
+  REQUIRES_LOGIN
+}
+enum BrowserSessionStatus {
+  VALID
+  EXPIRED
+  REQUIRES_LOGIN
+  ERROR
+}
+enum PeriodType {
+  DAILY
+  WEEKLY
+  MONTHLY
+  CUSTOM
+}
+enum SyncJobStatus {
+  QUEUED
+  RUNNING
+  SUCCESS
+  PARTIAL_SUCCESS
+  FAILED
+  CANCELLED
+}
+enum JobType {
+  SYNC_FACEBOOK
+  SYNC_TIKTOK
+  SYNC_ALL
+  VALIDATE_SESSION
+  GENERATE_REPORT
+}
+enum LogLevel {
+  DEBUG
+  INFO
+  WARN
+  ERROR
+}
+enum ReportFormat {
+  XLSX
+  PDF
+}
+enum ReportStatus {
+  QUEUED
+  RUNNING
+  SUCCESS
+  FAILED
+}
+
+model User {
+  id String @id @default(uuid()) @db.Uuid
+  name String
+  email String @unique
+  passwordHash String
+  refreshTokenHash String?
+  role Role @default(VIEWER)
+  status UserStatus @default(ACTIVE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  platformAccounts PlatformAccount[]
+  kpis Kpi[] @relation("KpiCreator")
+  reports Report[] @relation("ReportRequester")
+  auditLogs AuditLog[]
+}
+
+model PlatformAccount {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  platform Platform
+  accountName String
+  externalAccountId String
+  encryptedAccessToken String?
+  encryptedRefreshToken String?
+  tokenExpiresAt DateTime?
+  connectionStatus ConnectionStatus @default(DISCONNECTED)
+  lastSyncedAt DateTime?
+  metadata Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  browserSession BrowserSession?
+  posts Post[]
+  syncJobs SyncJob[]
+  @@unique([platform, externalAccountId, userId])
+  @@index([userId, platform])
+  @@index([connectionStatus])
+}
+
+model BrowserSession {
+  id String @id @default(uuid()) @db.Uuid
+  platformAccountId String @unique @db.Uuid
+  encryptedStorageState String
+  sessionStatus BrowserSessionStatus
+  lastValidatedAt DateTime?
+  expiresAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  platformAccount PlatformAccount @relation(fields: [platformAccountId], references: [id], onDelete: Cascade)
+}
+
+model Post {
+  id String @id @default(uuid()) @db.Uuid
+  platformAccountId String @db.Uuid
+  externalPostId String
+  platform Platform
+  contentType String
+  caption String?
+  postUrl String?
+  thumbnailUrl String?
+  durationSeconds Int?
+  publishedAt DateTime
+  rawData Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  platformAccount PlatformAccount @relation(fields: [platformAccountId], references: [id], onDelete: Cascade)
+  metrics PostMetric[]
+  @@unique([platformAccountId, externalPostId])
+  @@index([platform, publishedAt])
+  @@index([platformAccountId, publishedAt])
+}
+
+model PostMetric {
+  id String @id @default(uuid()) @db.Uuid
+  postId String @db.Uuid
+  metricDate DateTime @db.Date
+  views BigInt?
+  reach BigInt?
+  viewers BigInt?
+  reactions BigInt?
+  likes BigInt?
+  comments BigInt?
+  shares BigInt?
+  saves BigInt?
+  view3Seconds BigInt?
+  view1Minute BigInt?
+  totalWatchTimeSeconds Decimal? @db.Decimal(20,2)
+  averageWatchTimeSeconds Decimal? @db.Decimal(12,2)
+  completionRate Decimal? @db.Decimal(7,2)
+  newFollowers BigInt?
+  trafficSource String?
+  newViewerRate Decimal? @db.Decimal(7,2)
+  returningViewerRate Decimal? @db.Decimal(7,2)
+  maleRate Decimal? @db.Decimal(7,2)
+  femaleRate Decimal? @db.Decimal(7,2)
+  mainAgeGroup String?
+  mainLocation String?
+  engagementRate Decimal? @db.Decimal(7,2)
+  rawData Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  @@unique([postId, metricDate])
+  @@index([metricDate])
+}
+
+model Kpi {
+  id String @id @default(uuid()) @db.Uuid
+  platform Platform
+  periodType PeriodType
+  periodStart DateTime @db.Date
+  periodEnd DateTime @db.Date
+  metricName String
+  targetValue Decimal @db.Decimal(20,2)
+  createdBy String @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  creator User @relation("KpiCreator", fields: [createdBy], references: [id])
+  @@index([platform, periodStart, periodEnd])
+}
+
+model SyncJob {
+  id String @id @default(uuid()) @db.Uuid
+  platformAccountId String @db.Uuid
+  jobType JobType
+  status SyncJobStatus @default(QUEUED)
+  progress Int @default(0)
+  totalItems Int @default(0)
+  processedItems Int @default(0)
+  dateFrom DateTime @db.Date
+  dateTo DateTime @db.Date
+  startedAt DateTime?
+  finishedAt DateTime?
+  errorCode String?
+  errorMessage String?
+  metadata Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  platformAccount PlatformAccount @relation(fields: [platformAccountId], references: [id], onDelete: Cascade)
+  logs SyncLog[]
+  @@index([platformAccountId, status])
+  @@index([createdAt])
+}
+
+model SyncLog {
+  id String @id @default(uuid()) @db.Uuid
+  syncJobId String @db.Uuid
+  level LogLevel
+  message String
+  context Json?
+  createdAt DateTime @default(now())
+  syncJob SyncJob @relation(fields: [syncJobId], references: [id], onDelete: Cascade)
+  @@index([syncJobId, createdAt])
+}
+
+model Report {
+  id String @id @default(uuid()) @db.Uuid
+  requestedBy String @db.Uuid
+  platform Platform?
+  dateFrom DateTime @db.Date
+  dateTo DateTime @db.Date
+  format ReportFormat
+  status ReportStatus @default(QUEUED)
+  filePath String?
+  errorMessage String?
+  createdAt DateTime @default(now())
+  finishedAt DateTime?
+  requester User @relation("ReportRequester", fields: [requestedBy], references: [id])
+  @@index([requestedBy, createdAt])
+}
+
+model AuditLog {
+  id String @id @default(uuid()) @db.Uuid
+  userId String? @db.Uuid
+  action String
+  entityType String
+  entityId String?
+  oldData Json?
+  newData Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  @@index([userId, createdAt])
+  @@index([entityType, entityId])
+}

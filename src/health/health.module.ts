@@ -1,0 +1,1 @@
+import{BullModule}from'@nestjs/bullmq';import{Module}from'@nestjs/common';import{HealthController}from'./health.controller';@Module({imports:[BullModule.registerQueue({name:'social-sync'})],controllers:[HealthController]})export class HealthModule{}
