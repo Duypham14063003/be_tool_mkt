@@ -231,7 +231,7 @@ export class OAuthService {
     refreshToken?: string;
     expiresAt: Date | null;
   }) {
-    return this.prisma.platformAccount.upsert({
+    const account = await this.prisma.platformAccount.upsert({
       where: {
         platform_externalAccountId_userId: {
           platform: data.platform,
@@ -257,5 +257,52 @@ export class OAuthService {
         connectionStatus: 'CONNECTED',
       },
     });
+    await this.prisma.socialAccount.upsert({
+      where: {
+        platform_externalAccountId_userId: {
+          platform: data.platform,
+          externalAccountId: data.externalAccountId,
+          userId: data.userId,
+        },
+      },
+      create: {
+        id: account.id,
+        userId: data.userId,
+        platform: data.platform,
+        externalAccountId: data.externalAccountId,
+        displayName: data.accountName,
+        status: 'CONNECTED',
+        metadata: { migratedFrom: 'PlatformAccount' },
+      },
+      update: {
+        displayName: data.accountName,
+        status: 'CONNECTED',
+      },
+    });
+    const socialAccount = await this.prisma.socialAccount.findUniqueOrThrow({
+      where: {
+        platform_externalAccountId_userId: {
+          platform: data.platform,
+          externalAccountId: data.externalAccountId,
+          userId: data.userId,
+        },
+      },
+    });
+    await this.prisma.socialCredential.upsert({
+      where: { socialAccountId: socialAccount.id },
+      create: {
+        socialAccountId: socialAccount.id,
+        encryptedAccessToken: account.encryptedAccessToken,
+        encryptedRefreshToken: account.encryptedRefreshToken,
+        accessTokenExpiresAt: account.tokenExpiresAt,
+        scopes: ['user.info.basic', 'video.list'],
+      },
+      update: {
+        encryptedAccessToken: account.encryptedAccessToken,
+        encryptedRefreshToken: account.encryptedRefreshToken,
+        accessTokenExpiresAt: account.tokenExpiresAt,
+      },
+    });
+    return account;
   }
 }

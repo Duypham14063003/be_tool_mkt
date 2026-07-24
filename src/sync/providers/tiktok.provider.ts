@@ -15,18 +15,9 @@ const VIDEO_FIELDS = [
   'cover_image_url',
   'duration',
   'view_count',           // Lượt xem
-  'unique_video_views',   // Người xem (unique)
   'like_count',           // Like
   'comment_count',        // Bình luận
   'share_count',          // Chia sẻ
-  'save_count',           // Lưu video
-  'average_time_watched', // Thời gian xem TB (giây)
-  'total_time_watched',   // Tổng thời gian xem (giây)
-  'video_completion_rate', // Tỷ lệ xem hết (%)
-  'followers_count',       // Follow mới (tính từ video)
-  'reach_type',           // Nguồn chính
-  'new_followers_count',  // Follow mới
-  'audience_demographics', // Nam/Nữ, Độ tuổi, Khu vực
 ].join(',');
 
 interface TikTokVideo {
@@ -93,7 +84,6 @@ export class TiktokProvider implements SocialProvider {
     return json as T;
   }
 
-  // ─── Main: lấy danh sách video theo khoảng ngày ────────────────────────────
   async getPosts(
     _externalAccountId: string,
     from: Date,
@@ -108,9 +98,8 @@ export class TiktokProvider implements SocialProvider {
 
     while (hasMore) {
       const res = await this.tiktokPost<TikTokListResponse>(
-        '/v2/video/list/',
+        `/v2/video/list/?fields=${encodeURIComponent(VIDEO_FIELDS)}`,
         {
-          fields: VIDEO_FIELDS,
           max_count: 20,
           cursor,
         },
@@ -150,8 +139,8 @@ export class TiktokProvider implements SocialProvider {
       let detailMap: Map<string, TikTokVideo> = new Map();
       try {
         const detailRes = await this.tiktokPost<TikTokListResponse>(
-          '/v2/video/query/',
-          { filters: { video_ids: ids }, fields: VIDEO_FIELDS },
+          `/v2/video/query/?fields=${encodeURIComponent(VIDEO_FIELDS)}`,
+          { filters: { video_ids: ids } },
           accessToken,
         );
         const details = (detailRes as TikTokListResponse).data?.videos ?? [];

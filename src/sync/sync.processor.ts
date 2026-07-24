@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { Prisma } from '@prisma/client';
 import { Job } from 'bullmq';
 import { PrismaService } from '../database/prisma.service';
+import { TikTokAnalyticsService, TikTokAnalyticsMetric } from '../platform-accounts/tiktok-analytics.service';
 import { FakeSocialProvider } from './fake-social.provider';
 import { SocialProviderFactory } from './providers/social-provider.factory';
 
@@ -16,6 +17,7 @@ export class SyncProcessor extends WorkerHost {
     private fakeProvider: FakeSocialProvider,
     private providerFactory: SocialProviderFactory,
     private config: ConfigService,
+    private tiktokAnalytics: TikTokAnalyticsService,
   ) {
     super();
   }
@@ -55,8 +57,32 @@ export class SyncProcessor extends WorkerHost {
         data: { totalItems: posts.length },
       });
 
+      let analytics = new Map<string, TikTokAnalyticsMetric>();
+      if (mode === 'real' && sync.platformAccount.platform === 'TIKTOK') {
+        try {
+          analytics = await this.tiktokAnalytics.collect(
+            sync.platformAccountId,
+            posts.map((post) => post.externalPostId),
+          );
+        } catch (error) {
+          this.logger.warn(`TikTok Analytics enrichment skipped: ${error instanceof Error ? error.message : String(error)}`);
+        }
+      }
+
+      const socialAccount = await this.prisma.socialAccount.findUnique({
+        where: {
+          platform_externalAccountId_userId: {
+            platform: sync.platformAccount.platform,
+            externalAccountId: sync.platformAccount.externalAccountId,
+            userId: sync.platformAccount.userId,
+          },
+        },
+        select: { id: true },
+      });
+
       for (let i = 0; i < posts.length; i++) {
         const { metric, ...postData } = posts[i];
+        const analyticsMetric = analytics.get(postData.externalPostId);
 
         // Lấy extended fields từ rawData (TikTok inject ở đây)
         const extended = (metric.rawData as Record<string, unknown>)['_extended'] as
@@ -108,6 +134,24 @@ export class SyncProcessor extends WorkerHost {
                 mainLocation: (extended.mainLocation as string) ?? null,
               }
             : {}),
+          ...(analyticsMetric
+            ? {
+                viewers: analyticsMetric.viewers != null ? BigInt(analyticsMetric.viewers) : metric.viewers,
+                saves: analyticsMetric.saves != null ? BigInt(analyticsMetric.saves) : metric.saves,
+                totalWatchTimeSeconds: analyticsMetric.totalWatchTimeSeconds != null
+                  ? new Prisma.Decimal(analyticsMetric.totalWatchTimeSeconds)
+                  : null,
+                averageWatchTimeSeconds: analyticsMetric.averageWatchTimeSeconds != null
+                  ? new Prisma.Decimal(analyticsMetric.averageWatchTimeSeconds)
+                  : null,
+                completionRate: analyticsMetric.completionRate != null
+                  ? new Prisma.Decimal(analyticsMetric.completionRate)
+                  : null,
+                newFollowers: analyticsMetric.newFollowers != null
+                  ? BigInt(analyticsMetric.newFollowers)
+                  : null,
+              }
+            : {}),
         };
 
         await this.prisma.$transaction(async (tx) => {
@@ -137,6 +181,88 @@ export class SyncProcessor extends WorkerHost {
             create: { ...metricWithoutPostId, postId: post.id },
             update: metricWithoutPostId,
           });
+
+          // Dual-write to the new platform-neutral schema while the existing
+          // frontend continues reading the legacy tables.
+          if (socialAccount) {
+            const socialPost = await tx.socialPost.upsert({
+              where: {
+                socialAccountId_externalPostId: {
+                  socialAccountId: socialAccount.id,
+                  externalPostId: postData.externalPostId,
+                },
+              },
+              create: {
+                id: post.id,
+                socialAccountId: socialAccount.id,
+                ...postData,
+                rawData: postData.rawData as Prisma.InputJsonValue,
+              },
+              update: {
+                caption: postData.caption,
+                rawData: postData.rawData as Prisma.InputJsonValue,
+                publishedAt: postData.publishedAt,
+              },
+            });
+            await tx.socialPostMetricSnapshot.upsert({
+              where: {
+                postId_metricDate: {
+                  postId: socialPost.id,
+                  metricDate: postData.publishedAt,
+                },
+              },
+              create: {
+                postId: socialPost.id,
+                metricDate: postData.publishedAt,
+                views: metric.views,
+                reach: metric.reach,
+                likes: metric.likes,
+                comments: metric.comments,
+                shares: metric.shares,
+                saves: metric.saves,
+                reactions: metric.reactions,
+                engagementRate: metric.engagementRate === null
+                  ? null
+                  : new Prisma.Decimal(metric.engagementRate),
+                rawData: metric.rawData as Prisma.InputJsonValue,
+              },
+              update: {
+                views: metric.views,
+                reach: metric.reach,
+                likes: metric.likes,
+                comments: metric.comments,
+                shares: metric.shares,
+                saves: metric.saves,
+                reactions: metric.reactions,
+                engagementRate: metric.engagementRate === null
+                  ? null
+                  : new Prisma.Decimal(metric.engagementRate),
+                rawData: metric.rawData as Prisma.InputJsonValue,
+              },
+            });
+            if (analyticsMetric) {
+              await tx.socialPostAnalyticsSnapshot.create({
+                data: {
+                  postId: socialPost.id,
+                  viewers: analyticsMetric.viewers != null ? BigInt(analyticsMetric.viewers) : null,
+                  saves: analyticsMetric.saves != null ? BigInt(analyticsMetric.saves) : null,
+                  totalWatchTimeSeconds: analyticsMetric.totalWatchTimeSeconds != null
+                    ? new Prisma.Decimal(analyticsMetric.totalWatchTimeSeconds) : null,
+                  averageWatchTimeSeconds: analyticsMetric.averageWatchTimeSeconds != null
+                    ? new Prisma.Decimal(analyticsMetric.averageWatchTimeSeconds) : null,
+                  completionRate: analyticsMetric.completionRate != null
+                    ? new Prisma.Decimal(analyticsMetric.completionRate) : null,
+                  newFollowers: analyticsMetric.newFollowers != null ? BigInt(analyticsMetric.newFollowers) : null,
+                  maleRate: analyticsMetric.maleRate != null ? new Prisma.Decimal(analyticsMetric.maleRate) : null,
+                  femaleRate: analyticsMetric.femaleRate != null ? new Prisma.Decimal(analyticsMetric.femaleRate) : null,
+                  mainAgeGroup: analyticsMetric.mainAgeGroup ?? null,
+                  collectionMethod: 'PLAYWRIGHT',
+                  collectionStatus: 'PARTIAL',
+                  rawPayload: metric.rawData as Prisma.InputJsonValue,
+                },
+              });
+            }
+          }
         });
 
         const processed = i + 1;
