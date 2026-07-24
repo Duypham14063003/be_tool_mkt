@@ -20,12 +20,17 @@ export class SyncService {
       where: { platformAccountId: account.id, status: { in: ['QUEUED', 'RUNNING'] } },
     });
     if (active) throw new ConflictException('SYNC_ALREADY_RUNNING');
+    const dateFrom = new Date(dto.dateFrom);
+    const dateTo = new Date(dto.dateTo);
+    // Inputs from <input type="date"> are parsed at 00:00 UTC. Include the
+    // entire selected end date so posts published later that day are not lost.
+    dateTo.setUTCHours(23, 59, 59, 999);
     const row = await this.prisma.syncJob.create({
       data: {
         platformAccountId: account.id,
         jobType: account.platform === 'FACEBOOK' ? 'SYNC_FACEBOOK' : 'SYNC_TIKTOK',
-        dateFrom: new Date(dto.dateFrom),
-        dateTo: new Date(dto.dateTo),
+        dateFrom,
+        dateTo,
         metadata: { forceRefresh: dto.forceRefresh },
       },
     });
@@ -52,6 +57,53 @@ export class SyncService {
       where: { id, ...(user.role === 'ADMIN' ? {} : { platformAccount: { userId: user.id } }) },
     });
     return row;
+  }
+  async result(id: string, user: AuthUser) {
+    const job = await this.get(id, user);
+    if (!job) return null;
+
+    const posts = await this.prisma.post.findMany({
+      where: {
+        platformAccountId: job.platformAccountId,
+        publishedAt: { gte: job.dateFrom, lte: job.dateTo },
+      },
+      select: {
+        id: true,
+        externalPostId: true,
+        platform: true,
+        contentType: true,
+        caption: true,
+        postUrl: true,
+        thumbnailUrl: true,
+        durationSeconds: true,
+        publishedAt: true,
+        metrics: {
+          orderBy: { metricDate: 'desc' },
+          take: 1,
+          select: {
+            views: true,
+            likes: true,
+            comments: true,
+            shares: true,
+          },
+        },
+      },
+      orderBy: { publishedAt: 'desc' },
+    });
+
+    return {
+      jobId: job.id,
+      status: job.status,
+      totalItems: job.totalItems,
+      processedItems: job.processedItems,
+      videos: posts.map(({ metrics, ...post }) => ({
+        ...post,
+        views: metrics[0]?.views ?? null,
+        likes: metrics[0]?.likes ?? null,
+        comments: metrics[0]?.comments ?? null,
+        shares: metrics[0]?.shares ?? null,
+      })),
+    };
   }
   async cancel(id: string, user: AuthUser) {
     const row = await this.get(id, user);

@@ -1,54 +1,176 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="a7434938-0434-48e6-8b08-37fb7a5faa93" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dashboard/dashboard.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/dashboard/dashboard.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/kpis/kpis.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/kpis/kpis.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/prisma/migrations/20260721000000_init/migration.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/prisma/migrations/migration_lock.toml" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/migrations/migration_lock.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/schema.prisma" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/audit-logs/audit-logs.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/audit-logs/audit-logs.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auth/auth.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/auth.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auth/oauth.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/oauth.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/platform-accounts/platform-accounts.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/platform-accounts/platform-accounts.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/platform-accounts/platform-accounts.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/platform-accounts/platform-accounts.module.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/posts/posts.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/posts/posts.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/worker.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/worker.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/reports/report-export.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reports/report-export.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/reports/reports.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reports/reports.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/reports/reports.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reports/reports.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sync/providers/tiktok.provider.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/sync/providers/tiktok.provider.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sync/sync.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/sync/sync.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sync/sync.processor.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/sync/sync.processor.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sync/sync.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/sync/sync.service.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="3540" />
+    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 7,
-  "fromUser": false
-}]]></component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;thanhtruc379994&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Duypham14063003/be_tool_mkt.git&quot;,
+    &quot;accountId&quot;: &quot;afc03337-2edf-4688-a10b-9593c8f5ed55&quot;
+  }
+}</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/prisma/schema.prisma" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.0" />
+      <entry key="S5" value="1.0" />
+      <entry key="S10" value="1.0" />
+      <entry key="S30" value="1.0" />
+      <entry key="S60" value="1.0000000000000018" />
+      <entry key="M2" value="1.0000000617442604" />
+      <entry key="M5" value="1.0021529091296868" />
+      <entry key="M10" value="1.0765509451780961" />
+      <entry key="M15" value="1.261893972212604" />
+      <entry key="M30" value="1.9866309888574631" />
+      <entry key="H1" value="3.2564483464581824" />
+      <entry key="H2" value="5.536753781474769" />
+      <entry key="H4" value="9.102604320327456" />
+      <entry key="D1" value="16.52736332699641" />
+      <entry key="W1" value="18.61812950603821" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="3.124413013274424E-181" />
+      <entry key="S10" value="5.589644902204812E-91" />
+      <entry key="S30" value="8.2374869515239E-31" />
+      <entry key="S60" value="9.076060241935318E-16" />
+      <entry key="M2" value="3.0126500364189864E-8" />
+      <entry key="M5" value="9.807977795499435E-4" />
+      <entry key="M10" value="0.03131769115963176" />
+      <entry key="M15" value="0.09935579067639627" />
+      <entry key="M30" value="0.3153162662716101" />
+      <entry key="H1" value="0.5761806441512834" />
+      <entry key="H2" value="0.9210278967057433" />
+      <entry key="H4" value="1.451685008686069" />
+      <entry key="D1" value="2.606218201612272" />
+      <entry key="W1" value="2.938965074582684" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="0.9460576467255959" />
+      <entry key="MS500" value="0.9889709163809315" />
+      <entry key="S2" value="0.9972312513520695" />
+      <entry key="S5" value="0.9988915792636801" />
+      <entry key="S10" value="0.9994456359721023" />
+      <entry key="S30" value="0.999815177833572" />
+      <entry key="S60" value="0.9999075846464899" />
+      <entry key="M2" value="0.999953881661374" />
+      <entry key="M5" value="1.0030963735444443" />
+      <entry key="M10" value="1.1075595664507483" />
+      <entry key="M15" value="1.3606101432323374" />
+      <entry key="M30" value="2.3009398718264333" />
+      <entry key="H1" value="3.831729497316106" />
+      <entry key="H2" value="6.457166385230199" />
+      <entry key="H4" value="10.55391539187125" />
+      <entry key="D1" value="19.133503657127292" />
+      <entry key="W1" value="21.55708291508723" />
+    </decayedShown>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7,
+  &quot;fromUser&quot;: false
+}</component>
   <component name="ProjectId" id="3GnXcIdwN2IS4tjmdG0pQ7Y1E6M" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/phamngocduy/Documents/CTY/19t/tool_mkt",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "ts.external.directory.path": "/Applications/PyCharm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;truc&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/phamngocduy/Documents/CTY/19t/tool_mkt&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;E:\\work_space\\work\\be_tool_socialAnalysis\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-PY-261.26222.68" />
-        <option value="bundled-python-sdk-50341a9f1f9c-c2ffad84badb-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-261.26222.68" />
+        <option value="bundled-jdk-30f59d01ecdd-63390994e64e-intellij.indexing.shared.core-IU-262.8665.258" />
+        <option value="bundled-js-predefined-d6986cc7102b-4abd2a77f808-JavaScript-IU-262.8665.258" />
       </set>
     </attachedChunks>
   </component>
@@ -65,5 +187,13 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Hoàn thiện URL OAuth cho frontend, Sửa callback Facebook,Đặt chế độ lấy dữ liệu thật,ửa khóa mã hóa token,Tạo Prisma migration đầu tiên,Thêm file seed tài khoản,Sửa Prisma chạy trong Docker,Thêm .dockerignore, CORS cho frontend" />
+    <option name="LAST_COMMIT_MESSAGE" value="Hoàn thiện URL OAuth cho frontend, Sửa callback Facebook,Đặt chế độ lấy dữ liệu thật,ửa khóa mã hóa token,Tạo Prisma migration đầu tiên,Thêm file seed tài khoản,Sửa Prisma chạy trong Docker,Thêm .dockerignore, CORS cho frontend" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

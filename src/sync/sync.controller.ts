@@ -33,6 +33,9 @@ export class SyncController {
   @Get('jobs/:id') get(@Param('id') id: string, @CurrentUser() u: AuthUser) {
     return this.s.get(id, u);
   }
+  @Get('jobs/:id/result') result(@Param('id') id: string, @CurrentUser() u: AuthUser) {
+    return this.s.result(id, u);
+  }
   @Post('jobs/:id/cancel') cancel(@Param('id') id: string, @CurrentUser() u: AuthUser) {
     return this.s.cancel(id, u);
   }

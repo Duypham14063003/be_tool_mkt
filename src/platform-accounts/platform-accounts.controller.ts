@@ -5,12 +5,26 @@ import { AuthUser } from '../common/auth.types';
 import { CurrentUser } from '../common/current-user.decorator';
 import { CreatePlatformAccountDto, UpdatePlatformAccountDto } from './dto';
 import { PlatformAccountsService } from './platform-accounts.service';
+import { TikTokAnalyticsService } from './tiktok-analytics.service';
+import { OAuthService } from '../auth/oauth.service';
 @ApiTags('platform-accounts')
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
 @Controller('platform-accounts')
 export class PlatformAccountsController {
-  constructor(private service: PlatformAccountsService) {}
+  constructor(
+    private service: PlatformAccountsService,
+    private analytics: TikTokAnalyticsService,
+    private oauth: OAuthService,
+  ) {}
+  @Post('tiktok/connect-full')
+  connectTikTokFully(@CurrentUser() user: AuthUser) {
+    const state = this.oauth.createOAuthState(user.id);
+    return this.analytics.connectOAuthAndAnalytics(
+      user.id,
+      this.oauth.getTiktokAuthUrl(state),
+    );
+  }
   @Get() list(@CurrentUser() u: AuthUser) {
     return this.service.list(u);
   }
@@ -38,5 +52,12 @@ export class PlatformAccountsController {
   }
   @Get(':id/session-status') session(@Param('id') id: string, @CurrentUser() u: AuthUser) {
     return this.service.session(id, u);
+  }
+  @Post(':id/analytics-session/connect') async connectAnalytics(
+    @Param('id') id: string,
+    @CurrentUser() u: AuthUser,
+  ) {
+    await this.service.assertOwned(id, u);
+    return this.analytics.captureSession(id);
   }
 }
