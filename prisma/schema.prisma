@@ -208,10 +208,12 @@ model SocialPostAnalyticsSnapshot {
 
 model User {
   id               String            @id @default(uuid()) @db.Uuid
+  odooUid          Int?              @unique
   name             String
   email            String            @unique
   passwordHash     String?
   refreshTokenHash String?
+  lastSeenAt       DateTime?
   role             Role              @default(VIEWER)
   status           UserStatus        @default(ACTIVE)
   createdAt        DateTime          @default(now())
@@ -221,6 +223,22 @@ model User {
   reports          Report[]          @relation("ReportRequester")
   auditLogs        AuditLog[]
   socialAccounts   SocialAccount[]   @relation("SocialAccounts")
+  sessions         UserSession[]
+}
+
+model UserSession {
+  id               String   @id @default(uuid()) @db.Uuid
+  userId           String   @db.Uuid
+  refreshTokenHash String
+  deviceId         String?
+  deviceName       String?
+  expiresAt        DateTime
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, deviceId])
 }
 
 model PlatformAccount {

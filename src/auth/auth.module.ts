@@ -9,9 +9,11 @@ import { JwtStrategy } from './jwt.strategy';
 import { OAuthController } from './oauth.controller';
 import { OAuthService } from './oauth.service';
 import { OdooService } from './odoo.service';
+import { AuditLogsModule } from '../audit-logs/audit-logs.module';
 
 @Module({
   imports: [
+    AuditLogsModule,
     PassportModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
