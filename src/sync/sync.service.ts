@@ -49,12 +49,18 @@ export class SyncService {
   async list(user: AuthUser) {
     return this.prisma.syncJob.findMany({
       where: user.role === 'ADMIN' ? {} : { platformAccount: { userId: user.id } },
+      include: {
+        logs: { orderBy: { createdAt: 'asc' } },
+      },
       orderBy: { createdAt: 'desc' },
     });
   }
   async get(id: string, user: AuthUser) {
     const row = await this.prisma.syncJob.findFirst({
       where: { id, ...(user.role === 'ADMIN' ? {} : { platformAccount: { userId: user.id } }) },
+      include: {
+        logs: { orderBy: { createdAt: 'asc' } },
+      },
     });
     return row;
   }

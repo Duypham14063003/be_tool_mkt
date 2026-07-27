@@ -210,7 +210,7 @@ model User {
   id               String            @id @default(uuid()) @db.Uuid
   name             String
   email            String            @unique
-  passwordHash     String
+  passwordHash     String?
   refreshTokenHash String?
   role             Role              @default(VIEWER)
   status           UserStatus        @default(ACTIVE)

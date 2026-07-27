@@ -8,6 +8,8 @@ import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
 import { OAuthController } from './oauth.controller';
 import { OAuthService } from './oauth.service';
+import { OdooService } from './odoo.service';
+
 @Module({
   imports: [
     PassportModule,
@@ -18,8 +20,7 @@ import { OAuthService } from './oauth.service';
     CommonModule,
   ],
   controllers: [AuthController, OAuthController],
-  providers: [AuthService, JwtStrategy, OAuthService],
-  exports: [AuthService, OAuthService],
+  providers: [AuthService, JwtStrategy, OAuthService, OdooService],
+  exports: [AuthService, OAuthService, OdooService],
 })
 export class AuthModule {}
-
