@@ -4,24 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a7434938-0434-48e6-8b08-37fb7a5faa93" name="Changes" comment="">
+    <list default="true" id="a7434938-0434-48e6-8b08-37fb7a5faa93" name="Changes" comment="bug: đăng nhập odoo">
       <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/tool_mkt.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/tool_mkt.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/prisma/migrations/20260721000000_init/migration.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/prisma/migrations/migration_lock.toml" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/migrations/migration_lock.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/schema.prisma" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/audit-logs/audit-logs.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/audit-logs/audit-logs.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auth/auth.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/auth.controller.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/auth/auth.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/auth.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/auth/oauth.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/oauth.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/platform-accounts/platform-accounts.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/platform-accounts/platform-accounts.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/platform-accounts/platform-accounts.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/platform-accounts/platform-accounts.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auth/auth.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/auth.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auth/dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/dto.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/posts/posts.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/posts/posts.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/reports/report-export.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reports/report-export.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/reports/reports.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reports/reports.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/reports/reports.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reports/reports.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/sync/providers/tiktok.provider.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/sync/providers/tiktok.provider.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/sync/sync.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/sync/sync.controller.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/sync/sync.processor.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/sync/sync.processor.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/sync/sync.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/sync/sync.service.ts" afterDir="false" />
     </list>
@@ -31,7 +24,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="3540" />
+    <option name="cachedIndexableFilesCount" value="4601" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -53,6 +46,16 @@
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/Duypham14063003/be_tool_mkt.git&quot;,
     &quot;accountId&quot;: &quot;afc03337-2edf-4688-a10b-9593c8f5ed55&quot;
+  },
+  &quot;recentNewPullRequestHead&quot;: {
+    &quot;server&quot;: {
+      &quot;useHttp&quot;: false,
+      &quot;host&quot;: &quot;github.com&quot;,
+      &quot;port&quot;: null,
+      &quot;suffix&quot;: null
+    },
+    &quot;owner&quot;: &quot;Duypham14063003&quot;,
+    &quot;repository&quot;: &quot;be_tool_mkt&quot;
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
@@ -64,61 +67,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0" />
-      <entry key="S2" value="1.0" />
-      <entry key="S5" value="1.0" />
-      <entry key="S10" value="1.0" />
-      <entry key="S30" value="1.0" />
-      <entry key="S60" value="1.0000000000000018" />
-      <entry key="M2" value="1.0000000617442604" />
-      <entry key="M5" value="1.0021529091296868" />
-      <entry key="M10" value="1.0765509451780961" />
-      <entry key="M15" value="1.261893972212604" />
-      <entry key="M30" value="1.9866309888574631" />
-      <entry key="H1" value="3.2564483464581824" />
-      <entry key="H2" value="5.536753781474769" />
-      <entry key="H4" value="9.102604320327456" />
-      <entry key="D1" value="16.52736332699641" />
-      <entry key="W1" value="18.61812950603821" />
+      <entry key="MS100" value="1.380314517869242E-7" />
+      <entry key="MS500" value="0.08037439088482208" />
+      <entry key="S2" value="3.6998747536393455" />
+      <entry key="S5" value="9.65088658726084" />
+      <entry key="S10" value="13.490609017934" />
+      <entry key="S30" value="17.107749954536" />
+      <entry key="S60" value="19.24801316120928" />
+      <entry key="M2" value="22.31324533943536" />
+      <entry key="M5" value="31.907988195330574" />
+      <entry key="M10" value="52.8585149552696" />
+      <entry key="M15" value="76.81351406149896" />
+      <entry key="M30" value="159.918186371987" />
+      <entry key="H1" value="302.36460250028796" />
+      <entry key="H2" value="457.8084450117973" />
+      <entry key="H4" value="580.020162321806" />
+      <entry key="D1" value="721.3533896455297" />
+      <entry key="W1" value="750.8861837563268" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="0.0" />
-      <entry key="S2" value="0.0" />
-      <entry key="S5" value="3.124413013274424E-181" />
-      <entry key="S10" value="5.589644902204812E-91" />
-      <entry key="S30" value="8.2374869515239E-31" />
-      <entry key="S60" value="9.076060241935318E-16" />
-      <entry key="M2" value="3.0126500364189864E-8" />
-      <entry key="M5" value="9.807977795499435E-4" />
-      <entry key="M10" value="0.03131769115963176" />
-      <entry key="M15" value="0.09935579067639627" />
-      <entry key="M30" value="0.3153162662716101" />
-      <entry key="H1" value="0.5761806441512834" />
-      <entry key="H2" value="0.9210278967057433" />
-      <entry key="H4" value="1.451685008686069" />
-      <entry key="D1" value="2.606218201612272" />
-      <entry key="W1" value="2.938965074582684" />
+      <entry key="MS100" value="1.0002170026077066" />
+      <entry key="MS500" value="1.185051662250006" />
+      <entry key="S2" value="1.6558782778120646" />
+      <entry key="S5" value="1.8447521369156257" />
+      <entry key="S10" value="1.9191039859099872" />
+      <entry key="S30" value="1.9722729797129572" />
+      <entry key="S60" value="1.9860390355928903" />
+      <entry key="M2" value="1.9929949904970963" />
+      <entry key="M5" value="1.9980595228812716" />
+      <entry key="M10" value="2.0404232482479694" />
+      <entry key="M15" value="2.1536283354419705" />
+      <entry key="M30" value="2.610864318964493" />
+      <entry key="H1" value="3.3578724215925044" />
+      <entry key="H2" value="4.26097597772851" />
+      <entry key="H4" value="5.26313462881599" />
+      <entry key="D1" value="7.278745079063724" />
+      <entry key="W1" value="7.88663176411218" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.9460576467255959" />
-      <entry key="MS500" value="0.9889709163809315" />
-      <entry key="S2" value="0.9972312513520695" />
-      <entry key="S5" value="0.9988915792636801" />
-      <entry key="S10" value="0.9994456359721023" />
-      <entry key="S30" value="0.999815177833572" />
-      <entry key="S60" value="0.9999075846464899" />
-      <entry key="M2" value="0.999953881661374" />
-      <entry key="M5" value="1.0030963735444443" />
-      <entry key="M10" value="1.1075595664507483" />
-      <entry key="M15" value="1.3606101432323374" />
-      <entry key="M30" value="2.3009398718264333" />
-      <entry key="H1" value="3.831729497316106" />
-      <entry key="H2" value="6.457166385230199" />
-      <entry key="H4" value="10.55391539187125" />
-      <entry key="D1" value="19.133503657127292" />
-      <entry key="W1" value="21.55708291508723" />
+      <entry key="MS100" value="0.024183247124743668" />
+      <entry key="MS500" value="0.6176147247487239" />
+      <entry key="S2" value="4.992621010467497" />
+      <entry key="S5" value="11.302965099285181" />
+      <entry key="S10" value="15.302159586394566" />
+      <entry key="S30" value="19.041192083781777" />
+      <entry key="S60" value="21.214087746244672" />
+      <entry key="M2" value="24.295995509419136" />
+      <entry key="M5" value="33.90175189436269" />
+      <entry key="M10" value="54.89659300186964" />
+      <entry key="M15" value="78.96540213388369" />
+      <entry key="M30" value="162.52783129267723" />
+      <entry key="H1" value="305.721466675033" />
+      <entry key="H2" value="462.06859480132636" />
+      <entry key="H4" value="585.2827081610424" />
+      <entry key="D1" value="728.6319907830352" />
+      <entry key="W1" value="758.772793309853" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -149,7 +152,9 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;npm.Nest CLI Server.executor&quot;: &quot;Run&quot;,
+    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;E:\\work_space\\work\\be_tool_socialAnalysis\\node_modules\\prettier&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;application.passwordSafe&quot;,
     &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
     &quot;ts.external.directory.path&quot;: &quot;E:\\work_space\\work\\be_tool_socialAnalysis\\node_modules\\typescript\\lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
@@ -163,6 +168,16 @@
     </configuration>
     <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
       <option name="filePath" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Nest CLI Server" type="js.build_tools.npm">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="start" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
       <method v="2" />
     </configuration>
   </component>
@@ -190,7 +205,9 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Hoàn thiện URL OAuth cho frontend, Sửa callback Facebook,Đặt chế độ lấy dữ liệu thật,ửa khóa mã hóa token,Tạo Prisma migration đầu tiên,Thêm file seed tài khoản,Sửa Prisma chạy trong Docker,Thêm .dockerignore, CORS cho frontend" />
-    <option name="LAST_COMMIT_MESSAGE" value="Hoàn thiện URL OAuth cho frontend, Sửa callback Facebook,Đặt chế độ lấy dữ liệu thật,ửa khóa mã hóa token,Tạo Prisma migration đầu tiên,Thêm file seed tài khoản,Sửa Prisma chạy trong Docker,Thêm .dockerignore, CORS cho frontend" />
+    <MESSAGE value="Liên kết facebook, chỉnh xuất exel, pdf in đúng theo định dạng" />
+    <MESSAGE value="bug: đăng nhập odoo" />
+    <option name="LAST_COMMIT_MESSAGE" value="bug: đăng nhập odoo" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

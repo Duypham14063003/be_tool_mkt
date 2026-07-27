@@ -28,6 +28,18 @@ export class SyncProcessor extends WorkerHost {
       data: { status: 'RUNNING', startedAt: new Date(), progress: 1 },
       include: { platformAccount: true },
     });
+    await this.prisma.syncLog.create({
+      data: {
+        syncJobId: sync.id,
+        level: 'INFO',
+        message: 'Sync started',
+        context: {
+          platform: sync.platformAccount.platform,
+          dateFrom: sync.dateFrom.toISOString(),
+          dateTo: sync.dateTo.toISOString(),
+        },
+      },
+    });
 
     try {
       // ─── Chọn provider: real (Facebook/TikTok API) hoặc fake (dev) ─────────
@@ -64,8 +76,28 @@ export class SyncProcessor extends WorkerHost {
             sync.platformAccountId,
             posts.map((post) => post.externalPostId),
           );
+          await this.prisma.syncLog.create({
+            data: {
+              syncJobId: sync.id,
+              level: 'INFO',
+              message: 'TikTok Studio analytics collected',
+              context: {
+                requestedVideos: posts.length,
+                collectedVideos: analytics.size,
+              },
+            },
+          });
         } catch (error) {
-          this.logger.warn(`TikTok Analytics enrichment skipped: ${error instanceof Error ? error.message : String(error)}`);
+          const message = error instanceof Error ? error.message : String(error);
+          this.logger.warn(`TikTok Analytics enrichment skipped: ${message}`);
+          await this.prisma.syncLog.create({
+            data: {
+              syncJobId: sync.id,
+              level: 'WARN',
+              message: 'TikTok Studio analytics enrichment skipped',
+              context: { error: message },
+            },
+          });
         }
       }
 
@@ -105,7 +137,6 @@ export class SyncProcessor extends WorkerHost {
           engagementRate:
             metric.engagementRate === null ? null : new Prisma.Decimal(metric.engagementRate),
           rawData: metric.rawData as Prisma.InputJsonValue,
-          // ─── TikTok extended metrics ────────────────────────────────────
           ...(extended
             ? {
                 totalWatchTimeSeconds:
@@ -279,6 +310,17 @@ export class SyncProcessor extends WorkerHost {
           where: { id: sync.id },
           data: { status: 'SUCCESS', progress: 100, finishedAt: new Date() },
         }),
+        this.prisma.syncLog.create({
+          data: {
+            syncJobId: sync.id,
+            level: 'INFO',
+            message: 'Sync completed',
+            context: {
+              processedItems: posts.length,
+              tiktokAnalyticsItems: analytics.size,
+            },
+          },
+        }),
         this.prisma.platformAccount.update({
           where: { id: sync.platformAccountId },
           data: { lastSyncedAt: new Date() },
@@ -288,15 +330,26 @@ export class SyncProcessor extends WorkerHost {
       this.logger.log(`SyncJob ${sync.id} completed: ${posts.length} posts processed`);
       return { processed: posts.length };
     } catch (error) {
-      await this.prisma.syncJob.update({
-        where: { id: sync.id },
-        data: {
-          status: 'FAILED',
-          finishedAt: new Date(),
-          errorCode: 'SYNC_FAILED',
-          errorMessage: error instanceof Error ? error.message : 'Unknown error',
-        },
-      });
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      await this.prisma.$transaction([
+        this.prisma.syncJob.update({
+          where: { id: sync.id },
+          data: {
+            status: 'FAILED',
+            finishedAt: new Date(),
+            errorCode: 'SYNC_FAILED',
+            errorMessage: message,
+          },
+        }),
+        this.prisma.syncLog.create({
+          data: {
+            syncJobId: sync.id,
+            level: 'ERROR',
+            message: 'Sync failed',
+            context: { error: message },
+          },
+        }),
+      ]);
       throw error;
     }
   }

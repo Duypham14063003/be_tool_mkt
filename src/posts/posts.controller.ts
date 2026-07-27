@@ -6,11 +6,12 @@ import { AuthUser } from '../common/auth.types'; import { CurrentUser } from '..
 @ApiTags('posts') @ApiBearerAuth() @UseGuards(AuthGuard('jwt')) @Controller('posts')
 export class PostsController {
   constructor(private prisma: PrismaService) {}
-  @Get() async list(@CurrentUser() user:AuthUser,@Query('platform')platform?:Platform,@Query('platformAccountId')accountId?:string,@Query('dateFrom')dateFrom?:string,@Query('dateTo')dateTo?:string,@Query('contentType')contentType?:string,@Query('keyword')keyword?:string,@Query('sortOrder')sortOrder:'asc'|'desc'='desc',@Query('page')page='1',@Query('limit')limit='20') {
+  @Get() async list(@CurrentUser() user:AuthUser,@Query('platform')platform?:Platform,@Query('platformAccountId')accountId?:string,@Query('dateFrom')dateFrom?:string,@Query('dateTo')dateTo?:string,@Query('contentType')contentType?:string,@Query('caption')caption?:string,@Query('keyword')keyword?:string,@Query('sortOrder')sortOrder:'asc'|'desc'='desc',@Query('page')page='1',@Query('limit')limit='20') {
     const take=Math.min(Math.max(Number(limit)||20,1),100), current=Math.max(Number(page)||1,1);
     const endDate=dateTo?new Date(dateTo):undefined;
     if(endDate)endDate.setUTCHours(23,59,59,999);
-    const where:Prisma.PostWhereInput={...(platform?{platform}:{}),...(accountId?{platformAccountId:accountId}:{}),...(contentType?{contentType}:{}),...(keyword?{caption:{contains:keyword,mode:'insensitive'}}:{}),...((dateFrom||dateTo)?{publishedAt:{...(dateFrom?{gte:new Date(dateFrom)}:{}),...(endDate?{lte:endDate}:{})}}:{}),...(user.role===Role.ADMIN?{}:{platformAccount:{userId:user.id}})};
+    const captionSearch=(caption??keyword)?.trim();
+    const where:Prisma.PostWhereInput={...(platform?{platform}:{}),...(accountId?{platformAccountId:accountId}:{}),...(contentType?{contentType}:{}),...(captionSearch?{caption:{contains:captionSearch,mode:'insensitive'}}:{}),...((dateFrom||dateTo)?{publishedAt:{...(dateFrom?{gte:new Date(dateFrom)}:{}),...(endDate?{lte:endDate}:{})}}:{}),...(user.role===Role.ADMIN?{}:{platformAccount:{userId:user.id}})};
     const[data,total]=await this.prisma.$transaction([this.prisma.post.findMany({where,include:{metrics:{orderBy:{metricDate:'desc'},take:1}},skip:(current-1)*take,take,orderBy:{publishedAt:sortOrder==='asc'?'asc':'desc'}}),this.prisma.post.count({where})]);
 
     // The legacy endpoint is still consumed by the current frontend. Enrich
