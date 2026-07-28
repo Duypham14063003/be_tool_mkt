@@ -4,13 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a7434938-0434-48e6-8b08-37fb7a5faa93" name="Changes" comment="bug: đăng nhập odoo">
-      <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/auth/auth.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/auth.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/auth/auth.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/auth.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/auth/jwt.strategy.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/jwt.strategy.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/common/auth.types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/common/auth.types.ts" afterDir="false" />
+    <list default="true" id="a7434938-0434-48e6-8b08-37fb7a5faa93" name="Changes" comment="fix : đăng nhap bang odoo, moi tai khoan deu co the dang nhap voi role marketing">
+      <change beforePath="$PROJECT_DIR$/src/dashboard/dashboard.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/dashboard/dashboard.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dashboard/dashboard.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/dashboard/dashboard.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/kpis/dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/kpis/dto.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/kpis/kpis.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/kpis/kpis.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/reports/report-export.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reports/report-export.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/reports/reports.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reports/reports.module.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,61 +61,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0" />
-      <entry key="S2" value="1.0" />
-      <entry key="S5" value="1.0" />
-      <entry key="S10" value="1.0000000000000027" />
-      <entry key="S30" value="1.0000791672092006" />
-      <entry key="S60" value="1.033266561877763" />
-      <entry key="M2" value="1.6823116041015607" />
-      <entry key="M5" value="5.1808485029566995" />
-      <entry key="M10" value="8.76935284119621" />
-      <entry key="M15" value="11.687903233496778" />
-      <entry key="M30" value="33.483070467463456" />
-      <entry key="H1" value="123.62289964841146" />
-      <entry key="H2" value="292.17281010319465" />
-      <entry key="H4" value="469.94254540447247" />
-      <entry key="D1" value="716.8898903340721" />
-      <entry key="W1" value="773.1227105885251" />
+      <entry key="MS100" value="1.0000383411664555" />
+      <entry key="MS500" value="1.207568335496227" />
+      <entry key="S2" value="3.1627393349815076" />
+      <entry key="S5" value="7.381279192766071" />
+      <entry key="S10" value="12.39838442600419" />
+      <entry key="S30" value="19.365046952054882" />
+      <entry key="S60" value="21.943084036716105" />
+      <entry key="M2" value="23.414132483118955" />
+      <entry key="M5" value="24.965302984665513" />
+      <entry key="M10" value="27.70260922927933" />
+      <entry key="M15" value="30.537755773926538" />
+      <entry key="M30" value="48.39148083100192" />
+      <entry key="H1" value="128.51597053432732" />
+      <entry key="H2" value="292.402319191853" />
+      <entry key="H4" value="474.5899203407992" />
+      <entry key="D1" value="736.6207080954699" />
+      <entry key="W1" value="797.3083846423407" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="1.696447017404E-312" />
-      <entry key="S2" value="1.8312220792444663E-78" />
-      <entry key="S5" value="1.2131156397662644E-31" />
-      <entry key="S10" value="4.922228944072589E-16" />
-      <entry key="S30" value="1.2531591403523295E-5" />
-      <entry key="S60" value="0.005006216703982518" />
-      <entry key="M2" value="0.1000616600720733" />
-      <entry key="M5" value="0.6035724291090021" />
-      <entry key="M10" value="1.1024320427628573" />
-      <entry key="M15" value="1.373750519252896" />
-      <entry key="M30" value="1.9574288669180184" />
-      <entry key="H1" value="2.984496231271903" />
-      <entry key="H2" value="4.422659741825251" />
-      <entry key="H4" value="5.998267435645929" />
-      <entry key="D1" value="8.958734665423352" />
-      <entry key="W1" value="9.836285222862536" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="8.24381398608132E-217" />
+      <entry key="S5" value="5.562334071804278E-87" />
+      <entry key="S10" value="1.0539966812641385E-43" />
+      <entry key="S30" value="7.497193223771293E-15" />
+      <entry key="S60" value="1.2244918077497737E-7" />
+      <entry key="M2" value="4.94869654066506E-4" />
+      <entry key="M5" value="0.07218029305549072" />
+      <entry key="M10" value="0.3812382362182432" />
+      <entry key="M15" value="0.6768165224835216" />
+      <entry key="M30" value="1.373939248774489" />
+      <entry key="H1" value="2.500413329718037" />
+      <entry key="H2" value="4.048124991164034" />
+      <entry key="H4" value="5.738666910852115" />
+      <entry key="D1" value="8.892916329682459" />
+      <entry key="W1" value="9.825928918191275" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.8888426811665702" />
-      <entry key="MS500" value="0.9767085289622274" />
-      <entry key="S2" value="0.9941255712940557" />
-      <entry key="S5" value="0.9976460744242679" />
-      <entry key="S10" value="0.998822343775045" />
-      <entry key="S30" value="0.9996988326655791" />
-      <entry key="S60" value="1.038044169459112" />
-      <entry key="M2" value="1.7819513142168237" />
-      <entry key="M5" value="5.783598118086654" />
-      <entry key="M10" value="9.87104692845003" />
-      <entry key="M15" value="13.061032467982852" />
-      <entry key="M30" value="35.43998510652274" />
-      <entry key="H1" value="126.6068387825033" />
-      <entry key="H2" value="296.59487225181846" />
-      <entry key="H4" value="475.94030361638494" />
-      <entry key="D1" value="725.8484775216874" />
-      <entry key="W1" value="782.9589723457636" />
+      <entry key="MS100" value="0.9526750435446926" />
+      <entry key="MS500" value="1.1966605055726287" />
+      <entry key="S2" value="3.1570708431516126" />
+      <entry key="S5" value="7.37611911085339" />
+      <entry key="S10" value="12.393965344377875" />
+      <entry key="S30" value="19.362696201590804" />
+      <entry key="S60" value="21.941744099993162" />
+      <entry key="M2" value="23.413908316286285" />
+      <entry key="M5" value="25.037086010278223" />
+      <entry key="M10" value="28.083440746913787" />
+      <entry key="M15" value="31.214164718914986" />
+      <entry key="M30" value="49.76500815972337" />
+      <entry key="H1" value="131.0158915791314" />
+      <entry key="H2" value="296.44988440815433" />
+      <entry key="H4" value="480.3280936684771" />
+      <entry key="D1" value="745.5134769639453" />
+      <entry key="W1" value="807.134289967188" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -201,7 +201,8 @@
     <MESSAGE value="Hoàn thiện URL OAuth cho frontend, Sửa callback Facebook,Đặt chế độ lấy dữ liệu thật,ửa khóa mã hóa token,Tạo Prisma migration đầu tiên,Thêm file seed tài khoản,Sửa Prisma chạy trong Docker,Thêm .dockerignore, CORS cho frontend" />
     <MESSAGE value="Liên kết facebook, chỉnh xuất exel, pdf in đúng theo định dạng" />
     <MESSAGE value="bug: đăng nhập odoo" />
-    <option name="LAST_COMMIT_MESSAGE" value="bug: đăng nhập odoo" />
+    <MESSAGE value="fix : đăng nhap bang odoo, moi tai khoan deu co the dang nhap voi role marketing" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix : đăng nhap bang odoo, moi tai khoan deu co the dang nhap voi role marketing" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
