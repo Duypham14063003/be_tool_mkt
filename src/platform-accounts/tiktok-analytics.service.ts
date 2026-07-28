@@ -70,7 +70,7 @@ export class TikTokAnalyticsService {
   ): Promise<{ status: 'VALID' | 'REQUIRES_LOGIN'; message: string }> {
     this.logger.log(`Opening TikTok Studio for account ${platformAccountId}`);
     const timeoutSeconds = this.config.get<number>('PLAYWRIGHT_LOGIN_TIMEOUT_SECONDS', 180);
-    const context = await this.launchPersistentContext(platformAccountId, false);
+    const context = await this.launchPersistentContext(platformAccountId, this.shouldRunHeadless());
     this.logger.log(`TikTok Studio login timeout: ${timeoutSeconds}s`);
 
     try {
