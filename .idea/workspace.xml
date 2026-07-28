@@ -5,13 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a7434938-0434-48e6-8b08-37fb7a5faa93" name="Changes" comment="bug: đăng nhập odoo">
+      <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/schema.prisma" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/auth/auth.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/auth.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/auth/auth.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/auth.module.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/auth/auth.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/auth.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/auth/dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/dto.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auth/jwt.strategy.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/jwt.strategy.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/common/auth.types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/common/auth.types.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,7 +18,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="4601" />
+    <option name="cachedIndexableFilesCount" value="4604" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -62,61 +61,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0000000099710902" />
-      <entry key="MS500" value="1.06261867643225" />
-      <entry key="S2" value="3.36606836826036" />
-      <entry key="S5" value="8.739745571159295" />
-      <entry key="S10" value="15.139307193853739" />
-      <entry key="S30" value="24.098625571070425" />
-      <entry key="S60" value="28.353734793573445" />
-      <entry key="M2" value="32.64037172522113" />
-      <entry key="M5" value="42.99145637214075" />
-      <entry key="M10" value="64.13842295332336" />
-      <entry key="M15" value="88.1345460340728" />
-      <entry key="M30" value="171.23394108826764" />
-      <entry key="H1" value="313.72694020720604" />
-      <entry key="H2" value="469.328304197676" />
-      <entry key="H4" value="591.7166663163256" />
-      <entry key="D1" value="733.2905805060107" />
-      <entry key="W1" value="762.8768460270746" />
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.0" />
+      <entry key="S5" value="1.0" />
+      <entry key="S10" value="1.0000000000000027" />
+      <entry key="S30" value="1.0000791672092006" />
+      <entry key="S60" value="1.033266561877763" />
+      <entry key="M2" value="1.6823116041015607" />
+      <entry key="M5" value="5.1808485029566995" />
+      <entry key="M10" value="8.76935284119621" />
+      <entry key="M15" value="11.687903233496778" />
+      <entry key="M30" value="33.483070467463456" />
+      <entry key="H1" value="123.62289964841146" />
+      <entry key="H2" value="292.17281010319465" />
+      <entry key="H4" value="469.94254540447247" />
+      <entry key="D1" value="716.8898903340721" />
+      <entry key="W1" value="773.1227105885251" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="3.690816895114058E-33" />
-      <entry key="MS500" value="3.864941610670361E-7" />
-      <entry key="S2" value="0.03957125484130956" />
-      <entry key="S5" value="0.41426532891611667" />
-      <entry key="S10" value="0.9094289815522104" />
-      <entry key="S30" value="1.5376486777538718" />
-      <entry key="S60" value="1.7536092490716684" />
-      <entry key="M2" value="1.8727453639597333" />
-      <entry key="M5" value="1.9489353424996414" />
-      <entry key="M10" value="2.015184285610424" />
-      <entry key="M15" value="2.135832020060012" />
-      <entry key="M30" value="2.6000546193479064" />
-      <entry key="H1" value="3.350913951851784" />
-      <entry key="H2" value="4.256558709088159" />
-      <entry key="H4" value="5.260405828166451" />
-      <entry key="D1" value="7.2781159692929185" />
-      <entry key="W1" value="7.886534381923302" />
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="1.696447017404E-312" />
+      <entry key="S2" value="1.8312220792444663E-78" />
+      <entry key="S5" value="1.2131156397662644E-31" />
+      <entry key="S10" value="4.922228944072589E-16" />
+      <entry key="S30" value="1.2531591403523295E-5" />
+      <entry key="S60" value="0.005006216703982518" />
+      <entry key="M2" value="0.1000616600720733" />
+      <entry key="M5" value="0.6035724291090021" />
+      <entry key="M10" value="1.1024320427628573" />
+      <entry key="M15" value="1.373750519252896" />
+      <entry key="M30" value="1.9574288669180184" />
+      <entry key="H1" value="2.984496231271903" />
+      <entry key="H2" value="4.422659741825251" />
+      <entry key="H4" value="5.998267435645929" />
+      <entry key="D1" value="8.958734665423352" />
+      <entry key="W1" value="9.836285222862536" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.965936338613558" />
-      <entry key="MS500" value="1.0553167898600266" />
-      <entry key="S2" value="3.391373093350978" />
-      <entry key="S5" value="9.10585575447602" />
-      <entry key="S10" value="15.994316798334916" />
-      <entry key="S30" value="25.604510942037216" />
-      <entry key="S60" value="30.088918745203408" />
-      <entry key="M2" value="34.50307767848615" />
-      <entry key="M5" value="44.93603291856995" />
-      <entry key="M10" value="66.15120615757945" />
-      <entry key="M15" value="90.26859544634935" />
-      <entry key="M30" value="173.83275292875518" />
-      <entry key="H1" value="317.07683377027746" />
-      <entry key="H2" value="473.58403045522596" />
-      <entry key="H4" value="596.9764800992239" />
-      <entry key="D1" value="740.5685519525475" />
-      <entry key="W1" value="770.7633581138771" />
+      <entry key="MS100" value="0.8888426811665702" />
+      <entry key="MS500" value="0.9767085289622274" />
+      <entry key="S2" value="0.9941255712940557" />
+      <entry key="S5" value="0.9976460744242679" />
+      <entry key="S10" value="0.998822343775045" />
+      <entry key="S30" value="0.9996988326655791" />
+      <entry key="S60" value="1.038044169459112" />
+      <entry key="M2" value="1.7819513142168237" />
+      <entry key="M5" value="5.783598118086654" />
+      <entry key="M10" value="9.87104692845003" />
+      <entry key="M15" value="13.061032467982852" />
+      <entry key="M30" value="35.43998510652274" />
+      <entry key="H1" value="126.6068387825033" />
+      <entry key="H2" value="296.59487225181846" />
+      <entry key="H4" value="475.94030361638494" />
+      <entry key="D1" value="725.8484775216874" />
+      <entry key="W1" value="782.9589723457636" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -128,33 +127,33 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "#2 on truc",
-    "junie.onboarding.icon.badge.shown": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/phamngocduy/Documents/CTY/19t/tool_mkt",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "npm.Nest CLI Server.executor": "Run",
-    "prettierjs.PrettierConfiguration.Package": "E:\\work_space\\work\\be_tool_socialAnalysis\\node_modules\\prettier",
-    "settings.editor.selected.configurable": "application.passwordSafe",
-    "to.speed.mode.migration.done": "true",
-    "ts.external.directory.path": "E:\\work_space\\work\\be_tool_socialAnalysis\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;#4 on truc&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/phamngocduy/Documents/CTY/19t/tool_mkt&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;npm.Nest CLI Server.executor&quot;: &quot;Run&quot;,
+    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;E:\\work_space\\work\\be_tool_socialAnalysis\\node_modules\\prettier&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;application.passwordSafe&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;E:\\work_space\\work\\be_tool_socialAnalysis\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration default="true" type="JetRunConfigurationType">
       <method v="2">
