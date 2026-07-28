@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Role } from '@prisma/client';
@@ -67,9 +72,24 @@ export class AuthService {
     const odooUser = await this.odoo.authenticate(email, dto.password);
 
     // Bước 2: Tự động tạo hoặc cập nhật user trong DB local
-    const existing = await this.prisma.user.findFirst({
-      where: { OR: [{ odooUid: odooUser.uid }, { email }] },
-    });
+    const [userByOdooUid, userByEmail] = await Promise.all([
+      this.prisma.user.findUnique({ where: { odooUid: odooUser.uid } }),
+      this.prisma.user.findUnique({ where: { email } }),
+    ]);
+
+    // Never silently merge two local identities. This can otherwise transfer the
+    // role and data of one local user to a different Odoo account.
+    if (userByOdooUid && userByEmail && userByOdooUid.id !== userByEmail.id) {
+      throw new ConflictException(
+        'Tài khoản Odoo xung đột với tài khoản hiện có. Vui lòng liên hệ quản trị viên.',
+      );
+    }
+
+    if (userByEmail?.odooUid && userByEmail.odooUid !== odooUser.uid) {
+      throw new ConflictException('Email này đã được liên kết với một tài khoản Odoo khác.');
+    }
+
+    const existing = userByOdooUid ?? userByEmail;
     const user = existing
       ? await this.prisma.user.update({
           where: { id: existing.id },
@@ -77,6 +97,7 @@ export class AuthService {
             odooUid: odooUser.uid,
             email,
             name: odooUser.name,
+            role: existing.role === Role.VIEWER ? Role.MARKETING : existing.role,
             lastSeenAt: new Date(),
           },
         })
@@ -87,7 +108,7 @@ export class AuthService {
             name: odooUser.name,
             // Không lưu password hash — xác thực hoàn toàn qua Odoo
             passwordHash: null,
-            role: Role.VIEWER, // Role mặc định khi tạo mới; admin có thể đổi sau
+            role: Role.MARKETING,
             status: 'ACTIVE',
             lastSeenAt: new Date(),
           },
@@ -148,8 +169,8 @@ export class AuthService {
     }
   }
 
-  logout(userId: string) {
-    return this.prisma.userSession.deleteMany({ where: { userId } });
+  logout(userId: string, sessionId: string) {
+    return this.prisma.userSession.deleteMany({ where: { id: sessionId, userId } });
   }
 
   me(userId: string) {
