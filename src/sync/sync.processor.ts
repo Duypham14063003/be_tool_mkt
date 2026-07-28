@@ -4,7 +4,10 @@ import { ConfigService } from '@nestjs/config';
 import { Prisma } from '@prisma/client';
 import { Job } from 'bullmq';
 import { PrismaService } from '../database/prisma.service';
-import { TikTokAnalyticsService, TikTokAnalyticsMetric } from '../platform-accounts/tiktok-analytics.service';
+import {
+  TikTokAnalyticsService,
+  TikTokAnalyticsMetric,
+} from '../platform-accounts/tiktok-analytics.service';
 import { FakeSocialProvider } from './fake-social.provider';
 import { SocialProviderFactory } from './providers/social-provider.factory';
 
@@ -32,7 +35,7 @@ export class SyncProcessor extends WorkerHost {
       data: {
         syncJobId: sync.id,
         level: 'INFO',
-        message: 'Sync started',
+        message: 'Bắt đầu tạo lượt đồng bộ',
         context: {
           platform: sync.platformAccount.platform,
           dateFrom: sync.dateFrom.toISOString(),
@@ -47,15 +50,46 @@ export class SyncProcessor extends WorkerHost {
       let posts;
 
       if (mode === 'real') {
-        const { provider, externalAccountId, accessToken } =
-          await this.providerFactory.getForAccount(sync.platformAccountId);
+        try {
+          const { provider, externalAccountId, accessToken } =
+            await this.providerFactory.getForAccount(sync.platformAccountId);
 
-        posts = await provider.getPosts(
-          externalAccountId,
-          sync.dateFrom,
-          sync.dateTo,
-          accessToken,
-        );
+          posts = await provider.getPosts(
+            externalAccountId,
+            sync.dateFrom,
+            sync.dateTo,
+            accessToken,
+          );
+        } catch (error) {
+          if (sync.platformAccount.platform !== 'TIKTOK') throw error;
+          const message = error instanceof Error ? error.message : String(error);
+          this.logger.warn(
+            `TikTok API provider unavailable, falling back to Studio scrape: ${message}`,
+          );
+          await this.prisma.syncLog.create({
+            data: {
+              syncJobId: sync.id,
+              level: 'WARN',
+              message: 'TikTok API chưa khả dụng, chuyển sang scan TikTok Studio',
+              context: { error: message },
+            },
+          });
+          await this.logProgress(sync.id, 'Đang chuẩn bị scan TikTok Studio', 5);
+          posts = await this.tiktokAnalytics.collectPosts(
+            sync.platformAccountId,
+            sync.dateFrom,
+            sync.dateTo,
+            (event) =>
+              this.logProgress(
+                sync.id,
+                event.message,
+                event.progress,
+                event.processedItems,
+                event.totalItems,
+                event.context,
+              ),
+          );
+        }
       } else {
         posts = await this.fakeProvider.getPosts(
           sync.platformAccount.externalAccountId,
@@ -66,24 +100,48 @@ export class SyncProcessor extends WorkerHost {
 
       await this.prisma.syncJob.update({
         where: { id: sync.id },
-        data: { totalItems: posts.length },
+        data: { totalItems: posts.length, progress: Math.max(sync.progress, 33) },
       });
+      await this.logProgress(
+        sync.id,
+        `Đã lấy danh sách ${posts.length} bài, chuẩn bị đọc analytics`,
+        33,
+        0,
+        posts.length,
+      );
 
       let analytics = new Map<string, TikTokAnalyticsMetric>();
-      if (mode === 'real' && sync.platformAccount.platform === 'TIKTOK') {
+      if (sync.platformAccount.platform === 'TIKTOK') {
         try {
+          await this.logProgress(
+            sync.id,
+            'Bắt đầu vào từng trang phân tích TikTok Studio để đọc 3 tab',
+            35,
+            0,
+            posts.length,
+          );
           analytics = await this.tiktokAnalytics.collect(
             sync.platformAccountId,
             posts.map((post) => post.externalPostId),
+            (event) =>
+              this.logProgress(
+                sync.id,
+                event.message,
+                event.progress,
+                event.processedItems,
+                event.totalItems,
+                event.context,
+              ),
           );
           await this.prisma.syncLog.create({
             data: {
               syncJobId: sync.id,
               level: 'INFO',
-              message: 'TikTok Studio analytics collected',
+              message: 'Đã thu thập analytics từ TikTok Studio',
               context: {
                 requestedVideos: posts.length,
                 collectedVideos: analytics.size,
+                collectedVideoIds: [...analytics.keys()],
               },
             },
           });
@@ -94,7 +152,7 @@ export class SyncProcessor extends WorkerHost {
             data: {
               syncJobId: sync.id,
               level: 'WARN',
-              message: 'TikTok Studio analytics enrichment skipped',
+              message: 'Bỏ qua bước bổ sung analytics TikTok Studio',
               context: { error: message },
             },
           });
@@ -115,11 +173,27 @@ export class SyncProcessor extends WorkerHost {
       for (let i = 0; i < posts.length; i++) {
         const { metric, ...postData } = posts[i];
         const analyticsMetric = analytics.get(postData.externalPostId);
+        const metricRawData = {
+          ...((metric.rawData as Record<string, unknown>) ?? {}),
+          ...(analyticsMetric
+            ? {
+                studioAnalytics: {
+                  trafficSources: analyticsMetric.trafficSources,
+                  ageGroups: analyticsMetric.ageGroups,
+                  locations: analyticsMetric.locations,
+                  commentKeywords: analyticsMetric.commentKeywords,
+                  otherGenderRate: analyticsMetric.otherGenderRate,
+                  followerRate: analyticsMetric.followerRate,
+                  nonFollowerRate: analyticsMetric.nonFollowerRate,
+                  rawTabs: analyticsMetric.rawTabs,
+                },
+              }
+            : {}),
+        };
 
         // Lấy extended fields từ rawData (TikTok inject ở đây)
         const extended = (metric.rawData as Record<string, unknown>)['_extended'] as
-          | Record<string, unknown>
-          | undefined;
+          Record<string, unknown> | undefined;
 
         const metricData: Prisma.PostMetricUncheckedCreateInput & Record<string, unknown> = {
           postId: '', // sẽ gán sau
@@ -136,7 +210,7 @@ export class SyncProcessor extends WorkerHost {
           view1Minute: metric.view1Minute,
           engagementRate:
             metric.engagementRate === null ? null : new Prisma.Decimal(metric.engagementRate),
-          rawData: metric.rawData as Prisma.InputJsonValue,
+          rawData: metricRawData as Prisma.InputJsonValue,
           ...(extended
             ? {
                 totalWatchTimeSeconds:
@@ -151,7 +225,7 @@ export class SyncProcessor extends WorkerHost {
                   extended.completionRate != null
                     ? new Prisma.Decimal(extended.completionRate as number)
                     : null,
-                newFollowers: extended.newFollowers as bigint | null,
+                newFollowers: this.toBigIntOrNull(extended.newFollowers),
                 trafficSource: (extended.trafficSource as string) ?? null,
                 maleRate:
                   extended.maleRate != null
@@ -167,20 +241,54 @@ export class SyncProcessor extends WorkerHost {
             : {}),
           ...(analyticsMetric
             ? {
-                viewers: analyticsMetric.viewers != null ? BigInt(analyticsMetric.viewers) : metric.viewers,
+                views: analyticsMetric.views != null ? BigInt(analyticsMetric.views) : metric.views,
+                viewers:
+                  analyticsMetric.viewers != null
+                    ? BigInt(analyticsMetric.viewers)
+                    : metric.viewers,
+                likes: analyticsMetric.likes != null ? BigInt(analyticsMetric.likes) : metric.likes,
+                comments:
+                  analyticsMetric.comments != null
+                    ? BigInt(analyticsMetric.comments)
+                    : metric.comments,
+                shares:
+                  analyticsMetric.shares != null ? BigInt(analyticsMetric.shares) : metric.shares,
                 saves: analyticsMetric.saves != null ? BigInt(analyticsMetric.saves) : metric.saves,
-                totalWatchTimeSeconds: analyticsMetric.totalWatchTimeSeconds != null
-                  ? new Prisma.Decimal(analyticsMetric.totalWatchTimeSeconds)
-                  : null,
-                averageWatchTimeSeconds: analyticsMetric.averageWatchTimeSeconds != null
-                  ? new Prisma.Decimal(analyticsMetric.averageWatchTimeSeconds)
-                  : null,
-                completionRate: analyticsMetric.completionRate != null
-                  ? new Prisma.Decimal(analyticsMetric.completionRate)
-                  : null,
-                newFollowers: analyticsMetric.newFollowers != null
-                  ? BigInt(analyticsMetric.newFollowers)
-                  : null,
+                totalWatchTimeSeconds:
+                  analyticsMetric.totalWatchTimeSeconds != null
+                    ? new Prisma.Decimal(analyticsMetric.totalWatchTimeSeconds)
+                    : undefined,
+                averageWatchTimeSeconds:
+                  analyticsMetric.averageWatchTimeSeconds != null
+                    ? new Prisma.Decimal(analyticsMetric.averageWatchTimeSeconds)
+                    : undefined,
+                completionRate:
+                  analyticsMetric.completionRate != null
+                    ? new Prisma.Decimal(analyticsMetric.completionRate)
+                    : undefined,
+                newFollowers:
+                  analyticsMetric.newFollowers != null
+                    ? BigInt(analyticsMetric.newFollowers)
+                    : undefined,
+                trafficSource: analyticsMetric.trafficSource ?? undefined,
+                newViewerRate:
+                  analyticsMetric.newViewerRate != null
+                    ? new Prisma.Decimal(analyticsMetric.newViewerRate)
+                    : undefined,
+                returningViewerRate:
+                  analyticsMetric.returningViewerRate != null
+                    ? new Prisma.Decimal(analyticsMetric.returningViewerRate)
+                    : undefined,
+                maleRate:
+                  analyticsMetric.maleRate != null
+                    ? new Prisma.Decimal(analyticsMetric.maleRate)
+                    : undefined,
+                femaleRate:
+                  analyticsMetric.femaleRate != null
+                    ? new Prisma.Decimal(analyticsMetric.femaleRate)
+                    : undefined,
+                mainAgeGroup: analyticsMetric.mainAgeGroup ?? undefined,
+                mainLocation: analyticsMetric.mainLocation ?? undefined,
               }
             : {}),
         };
@@ -205,7 +313,9 @@ export class SyncProcessor extends WorkerHost {
             },
           });
 
-          const { postId: _ignored, ...metricWithoutPostId } = metricData as typeof metricData & { postId: string };
+          const { postId: _ignored, ...metricWithoutPostId } = metricData as typeof metricData & {
+            postId: string;
+          };
 
           await tx.postMetric.upsert({
             where: { postId_metricDate: { postId: post.id, metricDate: postData.publishedAt } },
@@ -245,30 +355,28 @@ export class SyncProcessor extends WorkerHost {
               create: {
                 postId: socialPost.id,
                 metricDate: postData.publishedAt,
-                views: metric.views,
+                views: metricData.views as bigint | null,
                 reach: metric.reach,
-                likes: metric.likes,
-                comments: metric.comments,
-                shares: metric.shares,
-                saves: metric.saves,
+                likes: metricData.likes as bigint | null,
+                comments: metricData.comments as bigint | null,
+                shares: metricData.shares as bigint | null,
+                saves: metricData.saves as bigint | null,
                 reactions: metric.reactions,
-                engagementRate: metric.engagementRate === null
-                  ? null
-                  : new Prisma.Decimal(metric.engagementRate),
-                rawData: metric.rawData as Prisma.InputJsonValue,
+                engagementRate:
+                  metric.engagementRate === null ? null : new Prisma.Decimal(metric.engagementRate),
+                rawData: metricRawData as Prisma.InputJsonValue,
               },
               update: {
-                views: metric.views,
+                views: metricData.views as bigint | null,
                 reach: metric.reach,
-                likes: metric.likes,
-                comments: metric.comments,
-                shares: metric.shares,
-                saves: metric.saves,
+                likes: metricData.likes as bigint | null,
+                comments: metricData.comments as bigint | null,
+                shares: metricData.shares as bigint | null,
+                saves: metricData.saves as bigint | null,
                 reactions: metric.reactions,
-                engagementRate: metric.engagementRate === null
-                  ? null
-                  : new Prisma.Decimal(metric.engagementRate),
-                rawData: metric.rawData as Prisma.InputJsonValue,
+                engagementRate:
+                  metric.engagementRate === null ? null : new Prisma.Decimal(metric.engagementRate),
+                rawData: metricRawData as Prisma.InputJsonValue,
               },
             });
             if (analyticsMetric) {
@@ -277,19 +385,36 @@ export class SyncProcessor extends WorkerHost {
                   postId: socialPost.id,
                   viewers: analyticsMetric.viewers != null ? BigInt(analyticsMetric.viewers) : null,
                   saves: analyticsMetric.saves != null ? BigInt(analyticsMetric.saves) : null,
-                  totalWatchTimeSeconds: analyticsMetric.totalWatchTimeSeconds != null
-                    ? new Prisma.Decimal(analyticsMetric.totalWatchTimeSeconds) : null,
-                  averageWatchTimeSeconds: analyticsMetric.averageWatchTimeSeconds != null
-                    ? new Prisma.Decimal(analyticsMetric.averageWatchTimeSeconds) : null,
-                  completionRate: analyticsMetric.completionRate != null
-                    ? new Prisma.Decimal(analyticsMetric.completionRate) : null,
-                  newFollowers: analyticsMetric.newFollowers != null ? BigInt(analyticsMetric.newFollowers) : null,
-                  maleRate: analyticsMetric.maleRate != null ? new Prisma.Decimal(analyticsMetric.maleRate) : null,
-                  femaleRate: analyticsMetric.femaleRate != null ? new Prisma.Decimal(analyticsMetric.femaleRate) : null,
+                  totalWatchTimeSeconds:
+                    analyticsMetric.totalWatchTimeSeconds != null
+                      ? new Prisma.Decimal(analyticsMetric.totalWatchTimeSeconds)
+                      : null,
+                  averageWatchTimeSeconds:
+                    analyticsMetric.averageWatchTimeSeconds != null
+                      ? new Prisma.Decimal(analyticsMetric.averageWatchTimeSeconds)
+                      : null,
+                  completionRate:
+                    analyticsMetric.completionRate != null
+                      ? new Prisma.Decimal(analyticsMetric.completionRate)
+                      : null,
+                  newFollowers:
+                    analyticsMetric.newFollowers != null
+                      ? BigInt(analyticsMetric.newFollowers)
+                      : null,
+                  maleRate:
+                    analyticsMetric.maleRate != null
+                      ? new Prisma.Decimal(analyticsMetric.maleRate)
+                      : null,
+                  femaleRate:
+                    analyticsMetric.femaleRate != null
+                      ? new Prisma.Decimal(analyticsMetric.femaleRate)
+                      : null,
                   mainAgeGroup: analyticsMetric.mainAgeGroup ?? null,
+                  mainLocation: analyticsMetric.mainLocation ?? null,
+                  trafficSource: analyticsMetric.trafficSource ?? null,
                   collectionMethod: 'PLAYWRIGHT',
                   collectionStatus: 'PARTIAL',
-                  rawPayload: metric.rawData as Prisma.InputJsonValue,
+                  rawPayload: metricRawData as Prisma.InputJsonValue,
                 },
               });
             }
@@ -297,11 +422,23 @@ export class SyncProcessor extends WorkerHost {
         });
 
         const processed = i + 1;
-        const progress = Math.round((processed / posts.length) * 100);
+        const progress = posts.length
+          ? Math.min(99, Math.round(75 + (processed / posts.length) * 24))
+          : 99;
         await this.prisma.syncJob.update({
           where: { id: sync.id },
           data: { processedItems: processed, progress },
         });
+        if (processed === 1 || processed === posts.length || processed % 5 === 0) {
+          await this.prisma.syncLog.create({
+            data: {
+              syncJobId: sync.id,
+              level: 'INFO',
+              message: `Đã lưu ${processed}/${posts.length} bài vào hệ thống`,
+              context: { processedItems: processed, totalItems: posts.length, progress },
+            },
+          });
+        }
         await job.updateProgress(progress);
       }
 
@@ -314,7 +451,7 @@ export class SyncProcessor extends WorkerHost {
           data: {
             syncJobId: sync.id,
             level: 'INFO',
-            message: 'Sync completed',
+            message: 'Hoàn tất đồng bộ',
             context: {
               processedItems: posts.length,
               tiktokAnalyticsItems: analytics.size,
@@ -345,12 +482,56 @@ export class SyncProcessor extends WorkerHost {
           data: {
             syncJobId: sync.id,
             level: 'ERROR',
-            message: 'Sync failed',
+            message: 'Đồng bộ thất bại',
             context: { error: message },
           },
         }),
       ]);
       throw error;
     }
+  }
+
+  private toBigIntOrNull(value: unknown): bigint | null {
+    if (value == null) return null;
+    if (typeof value === 'bigint') return value;
+    if (typeof value === 'number' && Number.isFinite(value)) return BigInt(Math.trunc(value));
+    if (typeof value === 'string' && value.trim()) return BigInt(value);
+    return null;
+  }
+
+  private async logProgress(
+    syncJobId: string,
+    message: string,
+    progress?: number,
+    processedItems?: number,
+    totalItems?: number,
+    context?: Record<string, unknown>,
+  ): Promise<void> {
+    const data: Prisma.SyncJobUpdateInput = {};
+    if (progress != null) data.progress = Math.max(0, Math.min(99, progress));
+    if (processedItems != null) data.processedItems = processedItems;
+    if (totalItems != null) data.totalItems = totalItems;
+
+    const createLog = this.prisma.syncLog.create({
+      data: {
+        syncJobId,
+        level: 'INFO',
+        message,
+        context: {
+          ...(context ?? {}),
+          ...(progress != null ? { progress } : {}),
+          ...(processedItems != null ? { processedItems } : {}),
+          ...(totalItems != null ? { totalItems } : {}),
+        },
+      },
+    });
+    if (!Object.keys(data).length) {
+      await createLog;
+      return;
+    }
+    await this.prisma.$transaction([
+      this.prisma.syncJob.update({ where: { id: syncJobId }, data }),
+      createLog,
+    ]);
   }
 }

@@ -8,12 +8,24 @@ import { chromium } from 'playwright';
 import { PrismaService } from '../database/prisma.service';
 
 type ExportPost = Post & { metrics: PostMetric[] };
+type BreakdownItem = { label?: unknown; value?: unknown };
 @Injectable()
 export class ReportExportService {
-  constructor(private prisma: PrismaService, private config: ConfigService) {}
+  constructor(
+    private prisma: PrismaService,
+    private config: ConfigService,
+  ) {}
   async generate(reportId: string): Promise<string> {
     const report = await this.prisma.report.findUniqueOrThrow({ where: { id: reportId } });
-    const posts = await this.prisma.post.findMany({ where: { ...(report.platform ? { platform: report.platform } : {}), publishedAt: { gte: report.dateFrom, lte: report.dateTo }, platformAccount: { userId: report.requestedBy } }, include: { metrics: { orderBy: { metricDate: 'desc' }, take: 1 } }, orderBy: { publishedAt: 'asc' } });
+    const posts = await this.prisma.post.findMany({
+      where: {
+        ...(report.platform ? { platform: report.platform } : {}),
+        publishedAt: { gte: report.dateFrom, lte: report.dateTo },
+        platformAccount: { userId: report.requestedBy },
+      },
+      include: { metrics: { orderBy: { metricDate: 'desc' }, take: 1 } },
+      orderBy: { publishedAt: 'asc' },
+    });
     const root = resolve(this.config.get('REPORT_STORAGE_PATH', './reports'));
     await mkdir(root, { recursive: true });
     const filename = `marketing-report-${report.id}.${report.format === 'PDF' ? 'pdf' : 'xlsx'}`;
@@ -29,7 +41,14 @@ export class ReportExportService {
     const workbook = new ExcelJS.Workbook();
     workbook.creator = 'Marketing Analytics';
     const platforms = report.platform ? [report.platform] : [Platform.FACEBOOK, Platform.TIKTOK];
-    for (const platform of platforms) this.addSheet(workbook, platform, posts.filter((post) => post.platform === platform), report.dateFrom, report.dateTo);
+    for (const platform of platforms)
+      this.addSheet(
+        workbook,
+        platform,
+        posts.filter((post) => post.platform === platform),
+        report.dateFrom,
+        report.dateTo,
+      );
     await workbook.xlsx.writeFile(filePath);
     return filePath;
   }
@@ -41,16 +60,15 @@ export class ReportExportService {
     from: Date,
     to: Date,
   ): Promise<void> {
-    const platforms = selectedPlatform
-      ? [selectedPlatform]
-      : [Platform.FACEBOOK, Platform.TIKTOK];
-    const sections = platforms.map((platform) => {
-      const rows = posts
-        .filter((post) => post.platform === platform)
-        .map((post, index) => {
-          const metric = post.metrics[0];
-          const value = (input: unknown) => input == null ? '--' : String(input);
-          return `<tr>
+    const platforms = selectedPlatform ? [selectedPlatform] : [Platform.FACEBOOK, Platform.TIKTOK];
+    const sections = platforms
+      .map((platform) => {
+        const rows = posts
+          .filter((post) => post.platform === platform)
+          .map((post, index) => {
+            const metric = post.metrics[0];
+            const value = (input: unknown) => (input == null ? '--' : String(input));
+            return `<tr>
             <td>${index + 1}</td>
             <td>${post.publishedAt.toLocaleDateString('vi-VN')}</td>
             <td class="caption">${this.escapeHtml(post.caption ?? '--')}</td>
@@ -65,22 +83,34 @@ export class ReportExportService {
             <td>${value(metric?.completionRate)}</td>
             <td>${value(metric?.newFollowers)}</td>
             <td>${this.escapeHtml(metric?.trafficSource ?? '--')}</td>
+            <td>${value(metric?.newViewerRate)}</td>
+            <td>${value(metric?.returningViewerRate)}</td>
             <td>${value(metric?.maleRate)}</td>
             <td>${value(metric?.femaleRate)}</td>
             <td>${this.escapeHtml(metric?.mainAgeGroup ?? '--')}</td>
             <td>${this.escapeHtml(metric?.mainLocation ?? '--')}</td>
+            <td>${this.escapeHtml(this.formatStudioBreakdown(metric?.rawData, 'trafficSources'))}</td>
+            <td>${this.escapeHtml(this.formatStudioValue(metric?.rawData, 'otherGenderRate'))}</td>
+            <td>${this.escapeHtml(this.formatStudioBreakdown(metric?.rawData, 'ageGroups'))}</td>
+            <td>${this.escapeHtml(this.formatStudioBreakdown(metric?.rawData, 'locations'))}</td>
+            <td>${this.escapeHtml(this.formatStudioBreakdown(metric?.rawData, 'commentKeywords', ''))}</td>
           </tr>`;
-        }).join('');
-      return `<h2>${platform === Platform.TIKTOK ? 'TikTok' : 'Facebook'}</h2>
+          })
+          .join('');
+        return `<h2>${platform === Platform.TIKTOK ? 'TikTok' : 'Facebook'}</h2>
         <table>
           <thead><tr><th>STT</th><th>Ngày</th><th>Caption</th><th>Lượt xem</th>
           <th>Người xem</th><th>Like</th><th>Bình luận</th><th>Chia sẻ</th>
           <th>Lưu video</th><th>Tổng thời gian phát</th><th>Thời gian xem TB</th>
           <th>Tỷ lệ xem hết</th><th>Follow mới</th><th>Nguồn chính</th>
-          <th>Nam</th><th>Nữ</th><th>Độ tuổi chính</th><th>Khu vực chính</th></tr></thead>
-          <tbody>${rows || '<tr><td colspan="18">Không có dữ liệu</td></tr>'}</tbody>
+          <th>Người xem mới</th><th>Người xem quay lại</th>
+          <th>Nam</th><th>Nữ</th><th>Độ tuổi chính</th><th>Khu vực chính</th>
+          <th>Nguồn traffic chi tiết</th><th>Khác giới tính</th><th>Phân bố tuổi</th>
+          <th>Phân bố vị trí</th><th>Từ khóa bình luận</th></tr></thead>
+          <tbody>${rows || '<tr><td colspan="25">Không có dữ liệu</td></tr>'}</tbody>
         </table>`;
-    }).join('<div class="page-break"></div>');
+      })
+      .join('<div class="page-break"></div>');
     const html = `<!doctype html><html lang="vi"><head><meta charset="utf-8"><style>
       @page{size:A4 landscape;margin:8mm}body{font-family:Arial,sans-serif;color:#1a1e26}
       h1{font-size:18px;margin:0 0 4px}h2{font-size:15px;margin:14px 0 6px}
@@ -102,35 +132,192 @@ export class ReportExportService {
   }
 
   private escapeHtml(value: string): string {
-    return value.replace(/[&<>"']/g, (character) => ({
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#039;',
-    })[character]!);
+    return value.replace(
+      /[&<>"']/g,
+      (character) =>
+        ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;',
+        })[character]!,
+    );
   }
-  private addSheet(workbook: ExcelJS.Workbook, platform: Platform, posts: ExportPost[], from: Date, to: Date): void {
-    const sheet = workbook.addWorksheet(platform === Platform.FACEBOOK ? 'Facebook' : 'TikTok', { views: [{ state: 'frozen', ySplit: 4 }] });
-    const labels = platform === Platform.FACEBOOK
-      ? ['STT','Ngày đăng','Loại','Caption','Reach','Lượt xem','Tương tác','Xem từ 3 giây','Xem từ 1 phút','Tỷ lệ tương tác','KPI','Tỷ lệ đạt KPI']
-      : ['STT','Ngày đăng','Caption','Lượt xem','Người xem','Like','Bình luận','Chia sẻ','Lưu video','Tổng thời gian phát','Thời gian xem trung bình','Tỷ lệ xem hết','Follow mới','Nguồn chính','Người xem mới','Người xem quay lại','Nam','Nữ','Độ tuổi chính','Khu vực chính','Engagement rate','KPI','Tỷ lệ đạt KPI'];
-    sheet.mergeCells(1, 1, 1, labels.length); sheet.getCell(1, 1).value = `BÁO CÁO MARKETING ${platform}`;
-    sheet.mergeCells(2, 1, 2, labels.length); sheet.getCell(2, 1).value = `Khoảng thời gian: ${from.toISOString().slice(0,10)} - ${to.toISOString().slice(0,10)}`;
-    sheet.addRow([]); sheet.addRow(labels);
-    sheet.getRow(4).font = { bold: true, color: { argb: 'FFFFFFFF' } }; sheet.getRow(4).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1F4E78' } };
+  private addSheet(
+    workbook: ExcelJS.Workbook,
+    platform: Platform,
+    posts: ExportPost[],
+    from: Date,
+    to: Date,
+  ): void {
+    const sheet = workbook.addWorksheet(platform === Platform.FACEBOOK ? 'Facebook' : 'TikTok', {
+      views: [{ state: 'frozen', ySplit: 4 }],
+    });
+    const labels =
+      platform === Platform.FACEBOOK
+        ? [
+            'STT',
+            'Ngày đăng',
+            'Loại',
+            'Caption',
+            'Reach',
+            'Lượt xem',
+            'Tương tác',
+            'Xem từ 3 giây',
+            'Xem từ 1 phút',
+            'Tỷ lệ tương tác',
+            'KPI',
+            'Tỷ lệ đạt KPI',
+          ]
+        : [
+            'STT',
+            'Ngày',
+            'Caption',
+            'Lượt xem',
+            'Người xem',
+            'Like',
+            'Bình luận',
+            'Chia sẻ',
+            'Lưu video',
+            'Tổng thời gian phát',
+            'Thời gian xem TB',
+            'Tỷ lệ xem hết',
+            'Follow mới',
+            'Nguồn chính',
+            'Người xem mới',
+            'Người xem quay lại',
+            'Nam',
+            'Nữ',
+            'Độ tuổi chính',
+            'Khu vực chính',
+            'Nguồn traffic chi tiết',
+            'Khác giới tính',
+            'Phân bố tuổi',
+            'Phân bố vị trí',
+            'Từ khóa bình luận',
+          ];
+    sheet.mergeCells(1, 1, 1, labels.length);
+    sheet.getCell(1, 1).value = `BÁO CÁO MARKETING ${platform}`;
+    sheet.mergeCells(2, 1, 2, labels.length);
+    sheet.getCell(2, 1).value =
+      `Khoảng thời gian: ${from.toISOString().slice(0, 10)} - ${to.toISOString().slice(0, 10)}`;
+    sheet.addRow([]);
+    sheet.addRow(labels);
+    sheet.getRow(4).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    sheet.getRow(4).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1F4E78' } };
     for (const [index, post] of posts.entries()) {
-      const m = post.metrics[0]; const n = (v: bigint | null | undefined): string | number => v === null || v === undefined ? '--' : Number(v); const d = (v: { toNumber(): number } | null | undefined): string | number => v ? v.toNumber() / 100 : '--';
-      const engagement = m && m.reactions !== null && m.comments !== null && m.shares !== null ? Number(m.reactions + m.comments + m.shares) : '--';
-      sheet.addRow(platform === Platform.FACEBOOK
-        ? [index+1,post.publishedAt,post.contentType,post.caption??'--',n(m?.reach),n(m?.views),engagement,n(m?.view3Seconds),n(m?.view1Minute),d(m?.engagementRate),'--','--']
-        : [index+1,post.publishedAt,post.caption??'--',n(m?.views),n(m?.viewers),n(m?.likes),n(m?.comments),n(m?.shares),n(m?.saves),m?.totalWatchTimeSeconds?.toNumber()??'--',m?.averageWatchTimeSeconds?.toNumber()??'--',d(m?.completionRate),n(m?.newFollowers),m?.trafficSource??'--',d(m?.newViewerRate),d(m?.returningViewerRate),d(m?.maleRate),d(m?.femaleRate),m?.mainAgeGroup??'--',m?.mainLocation??'--',d(m?.engagementRate),'--','--']);
+      const m = post.metrics[0];
+      const n = (v: bigint | null | undefined): string | number =>
+        v === null || v === undefined ? '--' : Number(v);
+      const d = (v: { toNumber(): number } | null | undefined): string | number =>
+        v ? v.toNumber() / 100 : '--';
+      const engagement =
+        m && m.reactions !== null && m.comments !== null && m.shares !== null
+          ? Number(m.reactions + m.comments + m.shares)
+          : '--';
+      sheet.addRow(
+        platform === Platform.FACEBOOK
+          ? [
+              index + 1,
+              post.publishedAt,
+              post.contentType,
+              post.caption ?? '--',
+              n(m?.reach),
+              n(m?.views),
+              engagement,
+              n(m?.view3Seconds),
+              n(m?.view1Minute),
+              d(m?.engagementRate),
+              '--',
+              '--',
+            ]
+          : [
+              index + 1,
+              post.publishedAt,
+              post.caption ?? '--',
+              n(m?.views),
+              n(m?.viewers),
+              n(m?.likes),
+              n(m?.comments),
+              n(m?.shares),
+              n(m?.saves),
+              m?.totalWatchTimeSeconds ? m.totalWatchTimeSeconds.toNumber() / 86400 : '--',
+              m?.averageWatchTimeSeconds?.toNumber() ?? '--',
+              d(m?.completionRate),
+              n(m?.newFollowers),
+              m?.trafficSource ?? '--',
+              d(m?.newViewerRate),
+              d(m?.returningViewerRate),
+              d(m?.maleRate),
+              d(m?.femaleRate),
+              m?.mainAgeGroup ?? '--',
+              m?.mainLocation ?? '--',
+              this.formatStudioBreakdown(m?.rawData, 'trafficSources'),
+              this.formatStudioValue(m?.rawData, 'otherGenderRate'),
+              this.formatStudioBreakdown(m?.rawData, 'ageGroups'),
+              this.formatStudioBreakdown(m?.rawData, 'locations'),
+              this.formatStudioBreakdown(m?.rawData, 'commentKeywords', ''),
+            ],
+      );
     }
-    const totalRow = sheet.addRow(['TỔNG']); sheet.mergeCells(totalRow.number, 1, totalRow.number, platform === Platform.FACEBOOK ? 4 : 3); totalRow.font = { bold: true };
-    sheet.autoFilter = { from: { row: 4, column: 1 }, to: { row: Math.max(4, sheet.rowCount - 1), column: labels.length } };
-    sheet.columns.forEach((column, index) => { column.width = Math.min(45, Math.max(12, labels[index]?.length + 2 || 12)); });
-    const captionColumn = platform === Platform.FACEBOOK ? 4 : 3; sheet.getColumn(captionColumn).width = 45; sheet.getColumn(captionColumn).alignment = { wrapText: true, vertical: 'top' };
-    const percentageColumns = platform === Platform.FACEBOOK ? [10,12] : [12,15,16,17,18,21,23]; percentageColumns.forEach((column) => { sheet.getColumn(column).numFmt = '0.00%'; });
+    const totalRow = sheet.addRow(['TỔNG']);
+    sheet.mergeCells(totalRow.number, 1, totalRow.number, platform === Platform.FACEBOOK ? 4 : 3);
+    totalRow.font = { bold: true };
+    const firstDataRow = 5;
+    const lastDataRow = totalRow.number - 1;
+    if (lastDataRow >= firstDataRow) {
+      const totalColumns =
+        platform === Platform.FACEBOOK ? [5, 6, 7, 8, 9] : [4, 5, 6, 7, 8, 9, 10, 13];
+      for (const column of totalColumns) {
+        totalRow.getCell(column).value = {
+          formula: `SUM(${sheet.getColumn(column).letter}${firstDataRow}:${sheet.getColumn(column).letter}${lastDataRow})`,
+        };
+      }
+    }
+    sheet.autoFilter = {
+      from: { row: 4, column: 1 },
+      to: { row: Math.max(4, sheet.rowCount - 1), column: labels.length },
+    };
+    sheet.columns.forEach((column, index) => {
+      column.width = Math.min(45, Math.max(12, labels[index]?.length + 2 || 12));
+    });
+    const captionColumn = platform === Platform.FACEBOOK ? 4 : 3;
+    sheet.getColumn(captionColumn).width = 45;
+    sheet.getColumn(captionColumn).alignment = { wrapText: true, vertical: 'top' };
+    const percentageColumns = platform === Platform.FACEBOOK ? [10, 12] : [12, 15, 16, 17, 18, 22];
+    percentageColumns.forEach((column) => {
+      sheet.getColumn(column).numFmt = '0.0%';
+    });
+    if (platform === Platform.TIKTOK) {
+      sheet.getColumn(10).numFmt = '[h]"h"mm"m"ss"s"';
+      sheet.getColumn(11).numFmt = '0.00"s"';
+    }
     sheet.getColumn(2).numFmt = 'dd/mm/yyyy';
+  }
+
+  private formatStudioBreakdown(rawData: unknown, key: string, suffix = '%'): string {
+    const items = this.studioAnalytics(rawData)[key];
+    if (!Array.isArray(items) || !items.length) return '--';
+    return (items as BreakdownItem[])
+      .map((item) => {
+        const label = item.label == null ? '' : String(item.label);
+        const value = item.value == null ? '--' : String(item.value);
+        return `${label}: ${value.includes('%') || !suffix ? value : `${value}${suffix}`}`;
+      })
+      .join(', ');
+  }
+
+  private formatStudioValue(rawData: unknown, key: string): string {
+    const value = this.studioAnalytics(rawData)[key];
+    if (value == null) return '--';
+    const text = String(value);
+    return text.includes('%') ? text : `${text}%`;
+  }
+
+  private studioAnalytics(rawData: unknown): Record<string, unknown> {
+    if (!rawData || typeof rawData !== 'object') return {};
+    const value = (rawData as Record<string, unknown>).studioAnalytics;
+    return value && typeof value === 'object' ? (value as Record<string, unknown>) : {};
   }
 }

@@ -25,6 +25,12 @@ export class PlatformAccountsController {
       this.oauth.getTiktokAuthUrl(state),
     );
   }
+  @Post('tiktok/studio/connect')
+  async connectTikTokStudio(@CurrentUser() user: AuthUser) {
+    const account = await this.service.ensureTikTokStudioAccount(user);
+    const result = await this.analytics.captureSession(account.id);
+    return { ...result, accountId: account.id };
+  }
   @Get() list(@CurrentUser() u: AuthUser) {
     return this.service.list(u);
   }

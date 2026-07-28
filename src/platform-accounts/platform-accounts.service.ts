@@ -73,4 +73,27 @@ export class PlatformAccountsService {
       select: { sessionStatus: true, lastValidatedAt: true, expiresAt: true },
     });
   }
+
+  ensureTikTokStudioAccount(user: AuthUser) {
+    const externalAccountId = `tiktok-studio-${user.id}`;
+    return this.prisma.platformAccount.upsert({
+      where: {
+        platform_externalAccountId_userId: {
+          platform: 'TIKTOK',
+          externalAccountId,
+          userId: user.id,
+        },
+      },
+      create: {
+        userId: user.id,
+        platform: 'TIKTOK',
+        accountName: 'TikTok Studio',
+        externalAccountId,
+        connectionStatus: 'REQUIRES_LOGIN',
+        metadata: { connectionMethod: 'TIKTOK_STUDIO' },
+      },
+      update: {},
+      select: safeSelect,
+    });
+  }
 }
