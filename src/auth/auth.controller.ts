@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Headers, Ip, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from '../common/current-user.decorator';
@@ -9,8 +9,12 @@ import { LoginDto, RefreshDto } from './dto';
 @Controller('auth')
 export class AuthController {
   constructor(private service: AuthService) {}
-  @Post('login') login(@Body() dto: LoginDto) {
-    return this.service.login(dto);
+  @Post('login') login(
+    @Body() dto: LoginDto,
+    @Ip() ipAddress: string,
+    @Headers('user-agent') userAgent?: string,
+  ) {
+    return this.service.login(dto, { ipAddress, userAgent });
   }
   @Post('refresh') refresh(@Body() dto: RefreshDto) {
     return this.service.refresh(dto.refreshToken);
