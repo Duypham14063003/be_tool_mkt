@@ -1,5 +1,6 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Role } from '@prisma/client';
+import { randomUUID } from 'crypto';
 import { AuthUser } from '../common/auth.types';
 import { EncryptionService } from '../common/encryption.service';
 import { PrismaService } from '../database/prisma.service';
@@ -74,25 +75,16 @@ export class PlatformAccountsService {
     });
   }
 
-  ensureTikTokStudioAccount(user: AuthUser) {
-    const externalAccountId = `tiktok-studio-${user.id}`;
-    return this.prisma.platformAccount.upsert({
-      where: {
-        platform_externalAccountId_userId: {
-          platform: 'TIKTOK',
-          externalAccountId,
-          userId: user.id,
-        },
-      },
-      create: {
+  createTikTokStudioAccount(user: AuthUser) {
+    return this.prisma.platformAccount.create({
+      data: {
         userId: user.id,
         platform: 'TIKTOK',
         accountName: 'TikTok Studio',
-        externalAccountId,
+        externalAccountId: `tiktok-studio-${randomUUID()}`,
         connectionStatus: 'REQUIRES_LOGIN',
         metadata: { connectionMethod: 'TIKTOK_STUDIO' },
       },
-      update: {},
       select: safeSelect,
     });
   }

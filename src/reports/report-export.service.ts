@@ -6,9 +6,11 @@ import { mkdir } from 'fs/promises';
 import { relative, resolve } from 'path';
 import { chromium } from 'playwright';
 import { PrismaService } from '../database/prisma.service';
+import { calculateVideoReachKpi } from '../kpis/video-reach-kpi';
 
 type ExportPost = Post & { metrics: PostMetric[] };
 type BreakdownItem = { label?: unknown; value?: unknown };
+
 @Injectable()
 export class ReportExportService {
   constructor(
@@ -68,6 +70,7 @@ export class ReportExportService {
           .map((post, index) => {
             const metric = post.metrics[0];
             const value = (input: unknown) => (input == null ? '--' : String(input));
+            const videoReachKpi = this.videoReachKpi(post);
             return `<tr>
             <td>${index + 1}</td>
             <td>${post.publishedAt.toLocaleDateString('vi-VN')}</td>
@@ -94,6 +97,8 @@ export class ReportExportService {
             <td>${this.escapeHtml(this.formatStudioBreakdown(metric?.rawData, 'ageGroups'))}</td>
             <td>${this.escapeHtml(this.formatStudioBreakdown(metric?.rawData, 'locations'))}</td>
             <td>${this.escapeHtml(this.formatStudioBreakdown(metric?.rawData, 'commentKeywords', ''))}</td>
+            <td>${videoReachKpi.status}</td>
+            <td>${videoReachKpi.rate === '--' ? '--' : `${videoReachKpi.rate}%`}</td>
           </tr>`;
           })
           .join('');
@@ -106,8 +111,9 @@ export class ReportExportService {
           <th>Người xem mới</th><th>Người xem quay lại</th>
           <th>Nam</th><th>Nữ</th><th>Độ tuổi chính</th><th>Khu vực chính</th>
           <th>Nguồn traffic chi tiết</th><th>Khác giới tính</th><th>Phân bố tuổi</th>
-          <th>Phân bố vị trí</th><th>Từ khóa bình luận</th></tr></thead>
-          <tbody>${rows || '<tr><td colspan="25">Không có dữ liệu</td></tr>'}</tbody>
+          <th>Phân bố vị trí</th><th>Từ khóa bình luận</th><th>KPI (300/video)</th>
+          <th>Tỷ lệ đạt KPI</th></tr></thead>
+          <tbody>${rows || '<tr><td colspan="27">Không có dữ liệu</td></tr>'}</tbody>
         </table>`;
       })
       .join('<div class="page-break"></div>');
@@ -167,7 +173,7 @@ export class ReportExportService {
             'Xem từ 3 giây',
             'Xem từ 1 phút',
             'Tỷ lệ tương tác',
-            'KPI',
+            'KPI (300/video)',
             'Tỷ lệ đạt KPI',
           ]
         : [
@@ -208,6 +214,7 @@ export class ReportExportService {
     sheet.getRow(4).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1F4E78' } };
     for (const [index, post] of posts.entries()) {
       const m = post.metrics[0];
+      const videoReachKpi = this.videoReachKpi(post);
       const n = (v: bigint | null | undefined): string | number =>
         v === null || v === undefined ? '--' : Number(v);
       const d = (v: { toNumber(): number } | null | undefined): string | number =>
@@ -229,8 +236,8 @@ export class ReportExportService {
               n(m?.view3Seconds),
               n(m?.view1Minute),
               d(m?.engagementRate),
-              '--',
-              '--',
+              videoReachKpi.status,
+              videoReachKpi.rate === '--' ? '--' : videoReachKpi.rate / 100,
             ]
           : [
               index + 1,
@@ -294,6 +301,19 @@ export class ReportExportService {
       sheet.getColumn(11).numFmt = '0.00"s"';
     }
     sheet.getColumn(2).numFmt = 'dd/mm/yyyy';
+  }
+
+  private videoReachKpi(post: ExportPost): { status: string; rate: number | '--' } {
+    const actual =
+      post.platform === Platform.TIKTOK ? post.metrics[0]?.views : post.metrics[0]?.reach;
+    const kpi = calculateVideoReachKpi(post.contentType, actual);
+    if (kpi.status == null || kpi.achievementRate == null) {
+      return { status: '--', rate: '--' };
+    }
+    return {
+      status: kpi.status === 'MET' ? 'Đạt' : 'Chưa đạt',
+      rate: kpi.achievementRate,
+    };
   }
 
   private formatStudioBreakdown(rawData: unknown, key: string, suffix = '%'): string {

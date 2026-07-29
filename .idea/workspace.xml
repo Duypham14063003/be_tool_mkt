@@ -5,12 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a7434938-0434-48e6-8b08-37fb7a5faa93" name="Changes" comment="bug: đăng nhập odoo">
-      <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/auth/auth.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/auth.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/auth/auth.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/auth.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/auth/jwt.strategy.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth/jwt.strategy.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/common/auth.types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/common/auth.types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/schema.prisma" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dashboard/dashboard.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/dashboard/dashboard.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/platform-accounts/platform-accounts.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/platform-accounts/platform-accounts.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/platform-accounts/platform-accounts.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/platform-accounts/platform-accounts.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/posts/posts.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/posts/posts.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/posts/posts.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/posts/posts.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/reports/report-export.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reports/report-export.service.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,7 +21,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="4604" />
+    <option name="cachedIndexableFilesCount" value="95" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -61,61 +64,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0" />
-      <entry key="S2" value="1.0" />
-      <entry key="S5" value="1.0" />
-      <entry key="S10" value="1.0000000000000027" />
-      <entry key="S30" value="1.0000791672092006" />
-      <entry key="S60" value="1.033266561877763" />
-      <entry key="M2" value="1.6823116041015607" />
-      <entry key="M5" value="5.1808485029566995" />
-      <entry key="M10" value="8.76935284119621" />
-      <entry key="M15" value="11.687903233496778" />
-      <entry key="M30" value="33.483070467463456" />
-      <entry key="H1" value="123.62289964841146" />
-      <entry key="H2" value="292.17281010319465" />
-      <entry key="H4" value="469.94254540447247" />
-      <entry key="D1" value="716.8898903340721" />
-      <entry key="W1" value="773.1227105885251" />
+      <entry key="MS100" value="1.4931163522466795" />
+      <entry key="MS500" value="1.8681402276011183" />
+      <entry key="S2" value="1.9668222761408938" />
+      <entry key="S5" value="2.3886320849880205" />
+      <entry key="S10" value="5.770185881575493" />
+      <entry key="S30" value="21.977443633839666" />
+      <entry key="S60" value="33.122969748842166" />
+      <entry key="M2" value="41.47020677744716" />
+      <entry key="M5" value="50.354655338203514" />
+      <entry key="M10" value="56.06169070827336" />
+      <entry key="M15" value="59.739136231243165" />
+      <entry key="M30" value="82.01664615297383" />
+      <entry key="H1" value="171.88090777274334" />
+      <entry key="H2" value="340.35704083721754" />
+      <entry key="H4" value="518.5357122855576" />
+      <entry key="D1" value="766.5397824418377" />
+      <entry key="W1" value="823.0689316205136" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="1.696447017404E-312" />
-      <entry key="S2" value="1.8312220792444663E-78" />
-      <entry key="S5" value="1.2131156397662644E-31" />
-      <entry key="S10" value="4.922228944072589E-16" />
-      <entry key="S30" value="1.2531591403523295E-5" />
-      <entry key="S60" value="0.005006216703982518" />
-      <entry key="M2" value="0.1000616600720733" />
-      <entry key="M5" value="0.6035724291090021" />
-      <entry key="M10" value="1.1024320427628573" />
-      <entry key="M15" value="1.373750519252896" />
-      <entry key="M30" value="1.9574288669180184" />
-      <entry key="H1" value="2.984496231271903" />
-      <entry key="H2" value="4.422659741825251" />
-      <entry key="H4" value="5.998267435645929" />
-      <entry key="D1" value="8.958734665423352" />
-      <entry key="W1" value="9.836285222862536" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="3.132163702043378E-87" />
+      <entry key="S5" value="3.776970356615619E-35" />
+      <entry key="S10" value="8.685253464414782E-18" />
+      <entry key="S30" value="3.2624694621485053E-6" />
+      <entry key="S60" value="0.0025543462062371596" />
+      <entry key="M2" value="0.07147476909963801" />
+      <entry key="M5" value="0.5275740384929501" />
+      <entry key="M10" value="1.0306918434465742" />
+      <entry key="M15" value="1.3134872976961185" />
+      <entry key="M30" value="1.91401348198252" />
+      <entry key="H1" value="2.951212873926116" />
+      <entry key="H2" value="4.397929660584372" />
+      <entry key="H4" value="5.981473741866151" />
+      <entry key="D1" value="8.954549399727577" />
+      <entry key="W1" value="9.835628629629555" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.8888426811665702" />
-      <entry key="MS500" value="0.9767085289622274" />
-      <entry key="S2" value="0.9941255712940557" />
-      <entry key="S5" value="0.9976460744242679" />
-      <entry key="S10" value="0.998822343775045" />
-      <entry key="S30" value="0.9996988326655791" />
-      <entry key="S60" value="1.038044169459112" />
-      <entry key="M2" value="1.7819513142168237" />
-      <entry key="M5" value="5.783598118086654" />
-      <entry key="M10" value="9.87104692845003" />
-      <entry key="M15" value="13.061032467982852" />
-      <entry key="M30" value="35.43998510652274" />
-      <entry key="H1" value="126.6068387825033" />
-      <entry key="H2" value="296.59487225181846" />
-      <entry key="H4" value="475.94030361638494" />
-      <entry key="D1" value="725.8484775216874" />
-      <entry key="W1" value="782.9589723457636" />
+      <entry key="MS100" value="1.4422553279468142" />
+      <entry key="MS500" value="1.855236040454707" />
+      <entry key="S2" value="1.9634165813547515" />
+      <entry key="S5" value="2.386812527889969" />
+      <entry key="S10" value="5.767129071728085" />
+      <entry key="S30" value="21.972754305181788" />
+      <entry key="S60" value="33.12186865242659" />
+      <entry key="M2" value="41.5391694745414" />
+      <entry key="M5" value="50.88049764150931" />
+      <entry key="M10" value="57.09116281639929" />
+      <entry key="M15" value="61.051670893953265" />
+      <entry key="M30" value="83.92997476435326" />
+      <entry key="H1" value="174.83147804326012" />
+      <entry key="H2" value="344.7543302118429" />
+      <entry key="H4" value="524.516655168408" />
+      <entry key="D1" value="775.4941805830578" />
+      <entry key="W1" value="832.9045362359943" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -127,33 +130,34 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;#4 on truc&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/phamngocduy/Documents/CTY/19t/tool_mkt&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;npm.Nest CLI Server.executor&quot;: &quot;Run&quot;,
-    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;E:\\work_space\\work\\be_tool_socialAnalysis\\node_modules\\prettier&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;application.passwordSafe&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;E:\\work_space\\work\\be_tool_socialAnalysis\\node_modules\\typescript\\lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "truc1",
+    "ignore.virus.scanning.warn.message": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "E:/work_space/work/maketing_tool/be_tool_mkt",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "npm.Nest CLI Server.executor": "Run",
+    "prettierjs.PrettierConfiguration.Package": "E:\\work_space\\work\\maketing_tool\\be_tool_mkt\\node_modules\\prettier",
+    "settings.editor.selected.configurable": "application.passwordSafe",
+    "to.speed.mode.migration.done": "true",
+    "ts.external.directory.path": "E:\\work_space\\work\\maketing_tool\\be_tool_mkt\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration default="true" type="JetRunConfigurationType">
       <method v="2">

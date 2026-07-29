@@ -224,6 +224,7 @@ model User {
   auditLogs        AuditLog[]
   socialAccounts   SocialAccount[]   @relation("SocialAccounts")
   sessions         UserSession[]
+  importBatches    ImportBatch[]
 }
 
 model UserSession {
@@ -259,6 +260,7 @@ model PlatformAccount {
   browserSession        BrowserSession?
   posts                 Post[]
   syncJobs              SyncJob[]
+  importBatches         ImportBatch[]
 
   @@unique([platform, externalAccountId, userId])
   @@index([userId, platform])
@@ -293,10 +295,35 @@ model Post {
   updatedAt         DateTime        @updatedAt
   platformAccount   PlatformAccount @relation(fields: [platformAccountId], references: [id], onDelete: Cascade)
   metrics           PostMetric[]
+  importBatchId     String?         @db.Uuid
+  importBatch       ImportBatch?    @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
 
   @@unique([platformAccountId, externalPostId])
   @@index([platform, publishedAt])
   @@index([platformAccountId, publishedAt])
+  @@index([importBatchId])
+}
+
+model ImportBatch {
+  id                String          @id @default(uuid()) @db.Uuid
+  userId            String          @db.Uuid
+  platformAccountId String          @db.Uuid
+  platform          Platform
+  fileName          String
+  status            String          @default("COMPLETED")
+  totalRows         Int
+  importedRows      Int             @default(0)
+  skippedRows       Int             @default(0)
+  failedRows        Int             @default(0)
+  dateFrom          DateTime?       @db.Date
+  dateTo            DateTime?       @db.Date
+  createdAt         DateTime        @default(now())
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  platformAccount   PlatformAccount @relation(fields: [platformAccountId], references: [id], onDelete: Cascade)
+  posts             Post[]
+
+  @@index([userId, createdAt])
+  @@index([platformAccountId, createdAt])
 }
 
 model PostMetric {
