@@ -28,8 +28,17 @@ export class PlatformAccountsController {
   @Post('tiktok/studio/connect')
   async connectTikTokStudio(@CurrentUser() user: AuthUser) {
     const account = await this.service.createTikTokStudioAccount(user);
-    const result = await this.analytics.captureSession(account.id);
-    return { ...result, accountId: account.id };
+    try {
+      const result = await this.analytics.captureSession(account.id);
+      if (result.status !== 'VALID') {
+        await this.service.remove(account.id, user);
+        return { ...result, accountId: null };
+      }
+      return { ...result, accountId: account.id };
+    } catch (error) {
+      await this.service.remove(account.id, user).catch(() => undefined);
+      throw error;
+    }
   }
   @Get() list(@CurrentUser() u: AuthUser) {
     return this.service.list(u);
