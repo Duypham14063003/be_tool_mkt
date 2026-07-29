@@ -874,17 +874,17 @@ export class TikTokAnalyticsService {
           processedItems: index,
           totalItems: limit,
         });
-        const clicked = await this.clickAnalyticsDetailButton(page, 0);
-        if (!clicked) {
+        const expectedVideoId = postIds[index];
+        const detailTarget = await this.clickAnalyticsDetailButton(page, index, expectedVideoId);
+        if (!detailTarget.clicked) {
           const currentCounts = await this.countAnalyticsDetailTargets(page, maxDetails);
-          const videoId = postIds[index];
           this.logger.warn(`TikTok Studio analytics detail button not clickable at index=${index}`);
           await onProgress?.({
             message: `Không click được nút phân tích video ${index + 1}/${limit}`,
             progress: Math.round(50 + (index / Math.max(limit, 1)) * 25),
             processedItems: index,
             totalItems: limit,
-            context: { videoId, index, url: page.url(), ...currentCounts },
+            context: { videoId: expectedVideoId, index, url: page.url(), ...currentCounts },
           });
           continue;
         }
@@ -892,7 +892,10 @@ export class TikTokAnalyticsService {
         await page.waitForLoadState('domcontentloaded', { timeout: 60_000 }).catch(() => undefined);
         await page.waitForTimeout(5_000);
         await this.autoScroll(page);
-        const videoId = postIds[index];
+        // URL trang chi tiết là nguồn xác thực cuối cùng. Nếu TikTok vẫn mở nhầm
+        // video thì không được gán dữ liệu của nó vào expectedVideoId khác.
+        const videoId =
+          this.videoIdFromUrl(page.url()) ?? detailTarget.videoId ?? expectedVideoId;
         await this.scrapeAnalyticsTabs(page, videoId, metrics).catch((error) => {
           this.logger.warn(
             `TikTok Studio tab scrape failed: ${error instanceof Error ? error.message : String(error)}`,
@@ -941,8 +944,62 @@ export class TikTokAnalyticsService {
     }
   }
 
-  private async clickAnalyticsDetailButton(page: Page, index: number): Promise<boolean> {
-    const row = this.analyticsVideoRows(page).nth(index);
+  private async clickAnalyticsDetailButton(
+    page: Page,
+    index: number,
+    expectedVideoId?: string,
+  ): Promise<{ clicked: boolean; videoId?: string }> {
+    // TikTok hiện render một wrapper chứa action của tất cả video. Nếu lấy
+    // `analyticsVideoRows().nth(0)` thì mọi vòng lặp đều click action đầu tiên
+    // trong wrapper đó. Chọn action toàn cục theo index trước để đi đúng từng video.
+    const actionBars = page.locator('[data-tt="components_ActionCell_FlexRow_7"]');
+    const actionBarCount = await actionBars.count().catch(() => 0);
+    if (index < actionBarCount) {
+      const actionBar = actionBars.nth(index);
+      const analystButton = actionBar.locator('.Tooltip__root').nth(1);
+      if (await analystButton.count().catch(() => 0)) {
+        const ownerRow = actionBar.locator(
+          'xpath=ancestor::*[@data-tt="components_VideoTable_Row" or self::tr or @role="row"][1]',
+        );
+        const resolvedVideoId =
+          (await this.videoIdFromAnalyticsRow(ownerRow)) ?? expectedVideoId;
+        await analystButton.scrollIntoViewIfNeeded({ timeout: 10_000 }).catch(() => undefined);
+        await analystButton.click({ timeout: 10_000 });
+        return { clicked: true, videoId: resolvedVideoId };
+      }
+    }
+
+    const actionCells = page.locator('[data-tt="components_ActionCell_Container"]');
+    const analyticsActionIndex = index * 4 + 1;
+    if (analyticsActionIndex < (await actionCells.count().catch(() => 0))) {
+      const action = actionCells.nth(analyticsActionIndex);
+      const ownerRow = action.locator(
+        'xpath=ancestor::*[@data-tt="components_VideoTable_Row" or self::tr or @role="row"][1]',
+      );
+      const resolvedVideoId =
+        (await this.videoIdFromAnalyticsRow(ownerRow)) ?? expectedVideoId;
+      await action.scrollIntoViewIfNeeded({ timeout: 10_000 }).catch(() => undefined);
+      await action.click({ timeout: 10_000 });
+      return { clicked: true, videoId: resolvedVideoId };
+    }
+
+    const rows = this.analyticsVideoRows(page);
+    const rowCount = await rows.count().catch(() => 0);
+    const matchingRow = expectedVideoId
+      ? rows.filter({
+          has: page.locator(
+            `a[href*="${expectedVideoId}"], [data-video-id="${expectedVideoId}"], [data-id="${expectedVideoId}"]`,
+          ),
+        })
+      : undefined;
+    const hasMatchingRow = matchingRow
+      ? (await matchingRow.count().catch(() => 0)) > 0
+      : false;
+    // Với bảng thường, chọn đúng nth(index). Với bảng virtualized, sau khi cuộn
+    // chỉ các dòng hiện tại còn trong DOM nên ưu tiên dò theo video id rồi mới lấy dòng đầu.
+    const effectiveIndex = index < rowCount ? index : 0;
+    const row = hasMatchingRow ? matchingRow!.first() : rows.nth(effectiveIndex);
+    const resolvedVideoId = (await this.videoIdFromAnalyticsRow(row)) ?? expectedVideoId;
     if (await row.count().catch(() => 0)) {
       await row.scrollIntoViewIfNeeded({ timeout: 10_000 }).catch(() => undefined);
       await row.hover({ timeout: 10_000 }).catch(() => undefined);
@@ -951,23 +1008,47 @@ export class TikTokAnalyticsService {
         const analystButton = rowActionBars.first().locator('.Tooltip__root').nth(1);
         if (await analystButton.count().catch(() => 0)) {
           await analystButton.click({ timeout: 10_000 });
-          return true;
+          return { clicked: true, videoId: resolvedVideoId };
         }
       }
       const rowActions = row.locator('[data-tt="components_ActionCell_Container"]');
       if ((await rowActions.count().catch(() => 0)) >= 2) {
         await rowActions.nth(1).click({ timeout: 10_000 });
-        return true;
+        return { clicked: true, videoId: resolvedVideoId };
       }
     }
 
-    for (const locator of this.analyticsDetailTargetLocators(page, index)) {
+    for (const locator of this.analyticsDetailTargetLocators(page, effectiveIndex)) {
       if (!(await locator.count().catch(() => 0))) continue;
       await locator.first().scrollIntoViewIfNeeded({ timeout: 10_000 });
       await locator.first().click({ timeout: 10_000 });
-      return true;
+      return { clicked: true, videoId: resolvedVideoId };
     }
-    return false;
+    return { clicked: false };
+  }
+
+  private async videoIdFromAnalyticsRow(
+    row: ReturnType<Page['locator']>,
+  ): Promise<string | undefined> {
+    const directId = await row
+      .getAttribute('data-video-id')
+      .catch(() => null);
+    if (directId) return directId;
+
+    const href = await row
+      .locator('a[href]')
+      .first()
+      .getAttribute('href')
+      .catch(() => null);
+    if (!href) return undefined;
+    return this.videoIdFromUrl(href);
+  }
+
+  private videoIdFromUrl(value: string): string | undefined {
+    return (
+      value.match(/\/video\/(\d+)/)?.[1] ??
+      value.match(/[?&](?:item_id|video_id)=(\d+)/)?.[1]
+    );
   }
 
   private async scrollPostTableToIndex(page: Page, index: number): Promise<void> {
