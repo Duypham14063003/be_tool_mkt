@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a7434938-0434-48e6-8b08-37fb7a5faa93" name="Changes" comment="bug: nhấn thêm tài khoản mà chauw đnăg nhập vẫn hiện.">
+    <list default="true" id="a7434938-0434-48e6-8b08-37fb7a5faa93" name="Changes" comment="fix bug">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/platform-accounts/tiktok-analytics.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/platform-accounts/tiktok-analytics.service.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -14,7 +13,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="1912" />
+    <option name="cachedIndexableFilesCount" value="2045" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -57,61 +56,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.276660519380464" />
-      <entry key="MS500" value="3.0891381587763016" />
-      <entry key="S2" value="4.3805899126493895" />
-      <entry key="S5" value="4.737937916343001" />
-      <entry key="S10" value="4.866452605924422" />
-      <entry key="S30" value="4.954912030425421" />
-      <entry key="S60" value="4.977383666098481" />
-      <entry key="M2" value="4.9886938680382045" />
-      <entry key="M5" value="5.2509023715643535" />
-      <entry key="M10" value="11.38134464648015" />
-      <entry key="M15" value="24.01611391957459" />
-      <entry key="M30" value="62.45238048708665" />
-      <entry key="H1" value="109.51286503610305" />
-      <entry key="H2" value="191.06640601133583" />
-      <entry key="H4" value="363.00472112795126" />
-      <entry key="D1" value="833.6838535040561" />
-      <entry key="W1" value="985.5059956692023" />
+      <entry key="MS100" value="1.000022371404431" />
+      <entry key="MS500" value="1.1866701864672167" />
+      <entry key="S2" value="2.7339890333021577" />
+      <entry key="S5" value="5.325114265988656" />
+      <entry key="S10" value="7.658428365086217" />
+      <entry key="S30" value="10.234736490118504" />
+      <entry key="S60" value="11.069527279886152" />
+      <entry key="M2" value="11.522092054272585" />
+      <entry key="M5" value="11.806580214885711" />
+      <entry key="M10" value="12.049715651820746" />
+      <entry key="M15" value="13.25920198434888" />
+      <entry key="M30" value="26.633399901403333" />
+      <entry key="H1" value="65.05347037974747" />
+      <entry key="H2" value="144.99915389011966" />
+      <entry key="H4" value="314.86705525653974" />
+      <entry key="D1" value="820.8946484881019" />
+      <entry key="W1" value="993.2654427381103" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
       <entry key="MS500" value="0.0" />
       <entry key="S2" value="0.0" />
-      <entry key="S5" value="4.429742363119991E-160" />
-      <entry key="S10" value="2.9644783709244233E-80" />
-      <entry key="S30" value="4.9084338080389215E-27" />
-      <entry key="S60" value="9.906887686585145E-14" />
-      <entry key="M2" value="4.4511405533756146E-7" />
-      <entry key="M5" value="0.004365194167667967" />
-      <entry key="M10" value="0.0934364413911922" />
-      <entry key="M15" value="0.2594308032746901" />
-      <entry key="M30" value="0.7214685949167562" />
-      <entry key="H1" value="1.2725700685371255" />
-      <entry key="H2" value="2.2377452392787247" />
-      <entry key="H4" value="4.126775727119371" />
-      <entry key="D1" value="9.630196001771681" />
-      <entry key="W1" value="11.614788253570563" />
+      <entry key="S5" value="0.0" />
+      <entry key="S10" value="1.6205156944616814E-193" />
+      <entry key="S30" value="8.646584510441484E-65" />
+      <entry key="S60" value="1.3148858911277938E-32" />
+      <entry key="M2" value="1.6216111473438218E-16" />
+      <entry key="M5" value="7.321393198571675E-7" />
+      <entry key="M10" value="0.0012100724467087327" />
+      <entry key="M15" value="0.01430709943137047" />
+      <entry key="M30" value="0.16942693673465073" />
+      <entry key="H1" value="0.6166861828647796" />
+      <entry key="H2" value="1.5577648453746362" />
+      <entry key="H4" value="3.4431543829411306" />
+      <entry key="D1" value="9.343854442071162" />
+      <entry key="W1" value="11.564811903468753" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.223146103812909" />
-      <entry key="MS500" value="3.0619167028874483" />
-      <entry key="S2" value="4.370885969199065" />
-      <entry key="S5" value="4.733736311670608" />
-      <entry key="S10" value="4.864294287634197" />
-      <entry key="S30" value="4.954179397379378" />
-      <entry key="S60" value="4.977015673947467" />
-      <entry key="M2" value="4.988509893001327" />
-      <entry key="M5" value="5.255180493797125" />
-      <entry key="M10" value="11.474596982437587" />
-      <entry key="M15" value="24.275242355047695" />
-      <entry key="M30" value="63.17344139420211" />
-      <entry key="H1" value="110.78507943086571" />
-      <entry key="H2" value="193.3038308512082" />
-      <entry key="H4" value="367.1311614613763" />
-      <entry key="D1" value="843.3138966158699" />
-      <entry key="W1" value="997.1207570431347" />
+      <entry key="MS100" value="0.96595808201231" />
+      <entry key="MS500" value="1.1785590933940366" />
+      <entry key="S2" value="2.729200215554287" />
+      <entry key="S5" value="5.321096990670903" />
+      <entry key="S10" value="7.655420109460744" />
+      <entry key="S30" value="10.233357257630924" />
+      <entry key="S60" value="11.068776034561266" />
+      <entry key="M2" value="11.521699674249621" />
+      <entry key="M5" value="11.806419773017563" />
+      <entry key="M10" value="12.050842042993876" />
+      <entry key="M15" value="13.27343805020885" />
+      <entry key="M30" value="26.802703838392386" />
+      <entry key="H1" value="65.66997055330071" />
+      <entry key="H2" value="146.55668886525257" />
+      <entry key="H4" value="318.3099263891197" />
+      <entry key="D1" value="830.2383540166378" />
+      <entry key="W1" value="1004.8302277962281" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -200,7 +199,8 @@
     <MESSAGE value="bug: đăng nhập odoo" />
     <MESSAGE value="feat:xử lý kpi, tống kê tổng quan, chỉnh lại có thể liên kết nhiều tài khoản tiktok" />
     <MESSAGE value="bug: nhấn thêm tài khoản mà chauw đnăg nhập vẫn hiện." />
-    <option name="LAST_COMMIT_MESSAGE" value="bug: nhấn thêm tài khoản mà chauw đnăg nhập vẫn hiện." />
+    <MESSAGE value="fix bug" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix bug" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
